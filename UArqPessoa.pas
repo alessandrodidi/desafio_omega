@@ -162,11 +162,12 @@ begin
           end;
         //verifica se pessoa já foi cadastrada
         SQL(ADOQuery2,['SELECT * FROM bs_pessoa'
-                      ,'WHERE (UPPER(pes_nome) = '''+UpperCase(edtNome.Text)+''''
-                               ,'and pes_datanasc = '''+FormatDateTime('yyyy-mm-dd',StrToDate(medtDtNasc.Text))+''')']);
+                      ,'WHERE ((UPPER(pes_nome) = '''+UpperCase(edtNome.Text)+''''
+                               ,'and pes_datanasc = '''+medtDtNasc.Text+''')'
+                              ,'or (pes_cpf = '''+medtCPF.Text+'''))']);
         if ADOQuery2.RecordCount > 0 then
           begin
-            Application.MessageBox(PChar('"'+edtNome.Text+'" já está cadastrado na base de dados')
+            Application.MessageBox(PChar('"'+edtNome.Text+'" já está cadastrado com o ID '+ADOQuery2.FieldByName('pes_id').Text)
                                   ,'Aviso'
                                   ,MB_ICONEXCLAMATION + MB_OK);
             edtNome.SetFocus;
@@ -177,7 +178,7 @@ begin
             descAcao := 'adicionado';
             SQL(ADOQuery,['INSERT INTO bs_pessoa '
                           ,'(pes_nome'
-                          ,',pes_datanasc)'
+                          ,',pes_datanasc'
                           ,',pes_cpf'
                           ,',pes_tiposang'
                           ,',pes_celular'
@@ -198,7 +199,8 @@ begin
         Editado := False;
         PesID := EmptyStr;
         PesNome := EmptyStr;
-        Application.MessageBox(PChar('Cadastro '+descAcao+'" com sucesso!')
+        HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
+        Application.MessageBox(PChar('Cadastro '+descAcao+' com sucesso!')
                               ,'Informação'
                               ,MB_ICONEXCLAMATION + MB_OK);
       end;
@@ -254,6 +256,7 @@ begin
   if dbgPessoas.SelectedRows.Count > 0 then
     begin
       Acao := 'EDITAR';
+      HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
     end;
 end;
 
@@ -265,6 +268,7 @@ end;
 procedure TfrmArqPessoa.btnNovoClick(Sender: TObject);
 begin
   Acao := 'ADICIONAR';
+  HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
 end;
 
 procedure TfrmArqPessoa.btnSalvarClick(Sender: TObject);
@@ -291,7 +295,7 @@ end;
 
 procedure TfrmArqPessoa.edtNomeKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (Key in (['a'..'z','A'..'Z','0'..'9'])) then
+  if not (Key in (['a'..'z','A'..'Z','0'..'9',#8,#32,#46])) then
     Key := #0
   else
     Editado := Enabled;
@@ -300,8 +304,11 @@ end;
 procedure TfrmArqPessoa.FormShow(Sender: TObject);
 begin
   Atualizar;
+  LimparForm(Self);
   Acao := EmptyStr;
   Editado := False;
+  //Desabilita os campos
+  HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
 end;
 
 procedure TfrmArqPessoa.medtCelularKeyPress(Sender: TObject; var Key: Char);

@@ -3,7 +3,8 @@ unit UFuncoes;
 interface
 
 uses
-  Windows, Forms, SysUtils, Controls, Data.Win.ADODB, IniFiles, Dialogs;
+  Windows, Forms, SysUtils, Controls, Data.Win.ADODB, IniFiles, Dialogs,
+  StdCtrls, Vcl.Mask, ExtCtrls, System.Classes;
 
   procedure Encerrar;
   procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
@@ -12,6 +13,8 @@ uses
   function ValidarData(Data: String): Boolean;
   function ValidarCPF(CPF: String): Boolean;
   function ValidarEmail(Email: String): Boolean;
+  procedure LimparForm(Form: TForm);
+  procedure HDControles(Comp: array of TComponent; HD: Boolean);
 
 implementation
 
@@ -253,6 +256,59 @@ begin
               Exit;
             end;
         end;
+    end;
+end;
+
+procedure LimparForm(Form: TForm);
+var
+  i: Integer;
+begin
+  for i := 0 to Form.ComponentCount -1 do
+    begin
+      if (Form.Components[i] is TEdit) then
+        (Form.Components[i] as TEdit).Clear;
+
+      if (Form.Components[i] is TMaskEdit) then
+        (Form.Components[i] as TMaskEdit).Clear;
+
+      if (Form.Components[i] is TRadioGroup) then
+        (Form.Components[i] as TRadioGroup).ItemIndex := -1;
+
+      if (Form.Components[i] is TCheckBox) then
+        (Form.Components[i] as TCheckBox).Checked := False;
+
+      if (Form.Components[i] is TComboBox) then
+        (Form.Components[i] as TComboBox).ItemIndex := -1;
+
+      if (Form.Components[i] is TMemo) then
+        (Form.Components[i] as TMemo).Clear;
+    end;
+end;
+
+//Função para habilita/desabilitar controles
+procedure HDControles(Comp: array of TComponent; HD: Boolean);
+var
+  i: Integer;
+begin
+  for i := low(Comp) to high(Comp) do
+    begin
+      if (Comp[i] is TEdit) then
+        (Comp[i] as TEdit).Enabled := HD;
+
+      if (Comp[i] is TMaskEdit) then
+        (Comp[i] as TMaskEdit).Enabled := HD;
+
+      if (Comp[i] is TCheckBox) then
+        (Comp[i] as TCheckBox).Enabled := HD;
+
+      if (Comp[i] is TListBox) then
+        (Comp[i] as TListBox).Enabled := HD;
+
+      if (Comp[i] is TComboBox) then
+        (Comp[i] as TComboBox).Enabled := HD;
+
+      if (Comp[i] is TRadioGroup) then
+        (Comp[i] as TRadioGroup).Enabled := HD;
     end;
 end;
 
