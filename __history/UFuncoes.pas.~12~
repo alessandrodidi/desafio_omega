@@ -27,8 +27,8 @@ var
   CaminhoArqIni, DadosConexao: String;
   ArqIni: TIniFile;
 begin
-  //Pega o caminho do arquivo de INI de configuração
   CaminhoArqIni := ExtractFilePath(Application.ExeName)+ArqConfBD;
+  ShowMessage(CaminhoArqIni);
   if FileExists(CaminhoArqIni) then
     begin
       try
