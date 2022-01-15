@@ -3,7 +3,7 @@ unit UFuncoes;
 interface
 
 uses
-  Windows, Forms, SysUtils, Controls, Data.Win.ADODB;
+  Windows, Forms, SysUtils, Controls;
 
   procedure Encerrar;
 
@@ -21,7 +21,7 @@ begin
     Abort;
 end;
 
-procedure InciarConexao(Conn: TADOConnection; BDConf: String);
+procedure ConnStart(Conn: TSQLConnection; IniSysConf, IniUserPref: String);
 var
   IniDBConf, Alias, DatabaseName: String;
 begin
@@ -52,6 +52,8 @@ begin
         begin
           Connected := False;
           Application.MessageBox(PChar('Não foi possível se conectar ao banco de dados '+DatabaseName+#13#13+'Detalhes: '+E.Message),'Erro de conexão',MB_ICONERROR + MB_OK);
+          //Conn.Free;
+          Abort;
           Exit;
         end;
       end;

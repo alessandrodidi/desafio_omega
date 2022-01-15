@@ -3,13 +3,11 @@ unit UConexao;
 interface
 
 uses
-  System.SysUtils, System.Classes, Data.DBXMsSQL, Data.DB, Data.SqlExpr,
-  Data.Win.ADODB;
+  System.SysUtils, System.Classes, Data.DBXMsSQL, Data.DB, Data.SqlExpr;
 
 type
   TdmConexao = class(TDataModule)
     sqlcConexao: TSQLConnection;
-    adocConexao: TADOConnection;
   private
     { Private declarations }
   public

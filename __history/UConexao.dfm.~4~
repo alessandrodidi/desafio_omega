@@ -23,13 +23,11 @@ object dmConexao: TdmConexao
         'ory,Borland.Data.DbxMSSQLDriver,Version=20.0.0.0,Culture=neutral' +
         ',PublicKeyToken=91d62ebb5b0d1b1b'
       'GetDriverFunc=getSQLDriverMSSQL'
-      'LibraryName=D:\Desenvolvimento\Delphi\Desafio_Omega\dbxmss.dll'
-      'VendorLib=D:\Desenvolvimento\Delphi\Desafio_Omega\sqlncli10.dll'
-      
-        'VendorLibWin64=D:\Desenvolvimento\Delphi\Desafio_Omega\sqlncli10' +
-        '.dll'
-      'HostName=PC-ALESSANDRO\SQLEXPRESS'
-      'Database=BS'
+      'LibraryName=dbxmss.dll'
+      'VendorLib=sqlncli10.dll'
+      'VendorLibWin64=sqlncli10.dll'
+      'HostName=localhost'
+      'Database=Database Name'
       'MaxBlobSize=-1'
       'LocaleCode=0000'
       'IsolationLevel=ReadCommitted'
@@ -39,16 +37,6 @@ object dmConexao: TdmConexao
       'User_Name=sa'
       'Password=qwe@123456')
     Left = 72
-    Top = 56
-  end
-  object adocConexao: TADOConnection
-    ConnectionString = 
-      'Provider=SQLOLEDB.1;Password=qwe@123456;Persist Security Info=Tr' +
-      'ue;User ID=sa;Initial Catalog=BS;Data Source=PC-ALESSANDRO\SQLEX' +
-      'PRESS'
-    LoginPrompt = False
-    Provider = 'SQLOLEDB.1'
-    Left = 200
     Top = 56
   end
 end

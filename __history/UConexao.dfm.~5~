@@ -23,11 +23,9 @@ object dmConexao: TdmConexao
         'ory,Borland.Data.DbxMSSQLDriver,Version=20.0.0.0,Culture=neutral' +
         ',PublicKeyToken=91d62ebb5b0d1b1b'
       'GetDriverFunc=getSQLDriverMSSQL'
-      'LibraryName=D:\Desenvolvimento\Delphi\Desafio_Omega\dbxmss.dll'
-      'VendorLib=D:\Desenvolvimento\Delphi\Desafio_Omega\sqlncli10.dll'
-      
-        'VendorLibWin64=D:\Desenvolvimento\Delphi\Desafio_Omega\sqlncli10' +
-        '.dll'
+      'LibraryName=dbxmss.dll'
+      'VendorLib=sqlncli10.dll'
+      'VendorLibWin64=sqlncli10.dll'
       'HostName=PC-ALESSANDRO\SQLEXPRESS'
       'Database=BS'
       'MaxBlobSize=-1'
