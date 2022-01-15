@@ -18,6 +18,7 @@ type
     miRelatorio: TMenuItem;
     sbBarraStatusPrincipal: TStatusBar;
     miRelDoacao: TMenuItem;
+    procedure miArqPessoaClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -29,6 +30,20 @@ var
 
 implementation
 
+uses
+  UArqPessoa;
+
 {$R *.dfm}
+
+procedure TfrmPrincipal.miArqPessoaClick(Sender: TObject);
+begin
+  if frmArqPessoa = Nil then
+    begin
+      frmArqPessoa := TForm.Create(Self);
+      frmArqPessoa.ShowModal;
+    end
+  else
+    frmArqPessoa.ShowModal;
+end;
 
 end.

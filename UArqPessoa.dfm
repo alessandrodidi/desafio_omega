@@ -1,6 +1,7 @@
 object frmArqPessoa: TfrmArqPessoa
   Left = 0
   Top = 0
+  BorderIcons = [biMinimize]
   Caption = 'Banco de Sangue [Pessoa]'
   ClientHeight = 429
   ClientWidth = 731

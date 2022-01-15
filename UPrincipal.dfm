@@ -39,6 +39,7 @@ object frmPrincipal: TfrmPrincipal
       Caption = '&Arquivo'
       object miArqPessoa: TMenuItem
         Caption = '&Pessoa'
+        OnClick = miArqPessoaClick
       end
     end
     object miProcesso: TMenuItem
