@@ -9,6 +9,9 @@ uses
   procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
   procedure EncerrarConexao(Conn: TADOConnection);
   procedure SQL(SQLQ: TADOQuery; Syntax: Array of String);
+  function ValidarData(Data: String): Boolean;
+  function ValidarCPF(CPF: String): Boolean;
+  function ValidarEmail(Email: String): Boolean;
 
 implementation
 
@@ -127,6 +130,130 @@ begin
       Abort;
     end;
   end;
+end;
+
+//função para validação de datas
+function ValidarData(Data: String): Boolean;
+begin
+  try
+    StrToDate(Data);
+    Result := True;
+  except on E: Exception do
+    Result := False;
+  end;
+end;
+
+//função para validar CPF
+function ValidarCPF(CPF: String): Boolean;
+const
+  A: Set of Char = ['.','-'];
+var
+  i,D1,D2: Integer;
+  xCPF: String;
+begin
+  try
+    xCPF := EmptyStr;
+    for i := 1 to length(CPF) do
+      begin
+        if not (CPF[i] in A) then
+          if not (CPF[i] = ' ') then
+            xCPF := xCPF+CPF[i];
+      end;
+    if ((length(xCPF) <> 11) or
+       (xCPF = '00000000000') or (xCPF = '11111111111') or
+       (xCPF = '22222222222') or (xCPF = '33333333333') or
+       (xCPF = '44444444444') or (xCPF = '55555555555') or
+       (xCPF = '66666666666') or (xCPF = '77777777777') or
+       (xCPF = '88888888888') or (xCPF = '99999999999')) then
+      begin
+        Result := False;
+        Exit;
+      end;
+
+    D1 := 0;
+    for i := 1 to 9 do
+      begin
+        D1 := D1+(strtoint(xCPF[10-i])*(i+1));
+      end;
+    D1 := ((11 - (D1 mod 11))mod 11) mod 10;
+    if D1 > 9 then
+      D1 := 0;
+
+
+    D2 := 0;
+    for i := 1 to 10 do
+      begin
+        D2 := D2+(strtoint(xCPF[11-i])*(i+1));
+      end;
+    D2 := ((11 - (D2 mod 11))mod 11) mod 10;
+    if D2 > 9 then
+      D2 := 0;
+
+    if ((IntToStr(D1) <> xCPF[10]) or (IntToStr(D2) <> xCPF[11])) then
+      begin
+        Result := False;
+        Exit;
+      end;
+
+    Result := True;
+  except
+    Result := False;
+  end;
+end;
+
+//função para validar email
+function ValidarEmail(Email: String): Boolean;
+var
+  i, cont: Integer;
+begin
+  Email := LowerCase(Email);
+  Result := True;
+
+  if Email = EmptyStr then
+    begin
+      Result := False;
+      Exit;
+    end;
+
+  if not ((Pos('@', EMail)<>0) and (Pos('.', EMail)<>0)) then
+    begin
+      Result := False;
+      Exit;
+    end;
+
+  if (abs(Pos('@', EMail) - Pos('.', EMail)) = 1) or
+     (abs(Pos('@', EMail) - Pos('_', EMail)) = 1) or
+     (abs(Pos('@', EMail) - Pos('-', EMail)) = 1) then
+    begin
+      Result := False;
+      Exit;
+    end;
+
+  cont := 0;
+  for i := 1 to Length(Email) do
+    begin
+      if not (Email[i] in ['a' .. 'z', '0' .. '9', '_', '-', '.', '@']) then
+        begin
+          Result := False;
+          Exit;
+        end;
+
+      if (EMail[i] = '.') and (EMail[i+1] = '.') then
+        begin
+          Result := false;
+          Exit;
+        end;
+
+      if EMail[i] = '@' then
+        begin
+          cont := cont + 1;
+          if cont > 1 then
+            begin
+              Result := False;
+              Exit;
+            end;
+        end;
+    end;
 end;
 
 end.

@@ -121,7 +121,8 @@ object frmArqPessoa: TfrmArqPessoa
       Left = 417
       Top = 61
       Width = 48
-      Height = 21
+      Height = 22
+      Style = csOwnerDrawFixed
       TabOrder = 4
       OnSelect = cbTipoSanguineoSelect
       Items.Strings = (
@@ -255,5 +256,11 @@ object frmArqPessoa: TfrmArqPessoa
     DataSet = ADOQuery
     Left = 400
     Top = 249
+  end
+  object ADOQuery2: TADOQuery
+    Connection = dmConexao.adocConexao
+    Parameters = <>
+    Left = 512
+    Top = 97
   end
 end

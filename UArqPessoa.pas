@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
-  Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, Vcl.Mask;
+  Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, Vcl.Mask, DateUtils;
 
 type
   TfrmArqPessoa = class(TForm)
@@ -35,6 +35,7 @@ type
     edtEmail: TEdit;
     btnSalvar: TButton;
     btnCancelar: TButton;
+    ADOQuery2: TADOQuery;
     procedure FormShow(Sender: TObject);
     procedure btnAtualizarClick(Sender: TObject);
     procedure btnEditarClick(Sender: TObject);
@@ -92,44 +93,115 @@ var
   descAcao: String;
 begin
   try
-    if edtNome.Text = EmptyStr then
+    if Editado then
       begin
-        Application.MessageBox('Informe o nome'
-                              ,'Aviso'
+        //verifica se o nome foi preenchido
+        if Length(edtNome.Text) < 5 then
+          begin
+            Application.MessageBox('O nome informado é inválido'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            edtNome.SetFocus;
+            Exit;
+          end;
+        //valida a data de nascimento
+        if not ValidarData(medtDtNasc.Text) then
+          begin
+            Application.MessageBox('Data de nascimento inválida'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            medtDtNasc.SetFocus;
+            Exit;
+          end;
+        //Verifica a idade - deve estar entre 18 e 60 anos
+        //showmessage(IntToStr(YearsBetween(StrToDate('23/11/1986'),now)));
+        if ((YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) < 18) or
+            (YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) > 60)) then
+          begin
+            Application.MessageBox('Idade deve ser entre 18 e 60 anos'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            medtDtNasc.SetFocus;
+            Exit;
+          end;
+        //valida o CPF
+        if not ValidarCPF(medtCPF.Text) then
+          begin
+            Application.MessageBox('CPF inválido'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            medtCPF.SetFocus;
+            Exit;
+          end;
+        //vefica se foi selecionado o tipo sanguíneo
+        if cbTipoSanguineo.Text = EmptyStr then
+          begin
+            Application.MessageBox('Selecione o tipo sanguíneo'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            cbTipoSanguineo.SetFocus;
+            Exit;
+          end;
+        //verifica se foi preenchido o número do celular
+        if medtCelular.Text = '(__) _.____-____' then
+          begin
+            Application.MessageBox('Selecione o tipo sanguíneo'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            medtCelular.SetFocus;
+            Exit;
+          end;
+        //valida o email
+        if not ValidarEmail(edtEmail.Text) then
+          begin
+            Application.MessageBox('Email inválido'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            edtEmail.SetFocus;
+            Exit;
+          end;
+        //verifica se pessoa já foi cadastrada
+        SQL(ADOQuery2,['SELECT * FROM bs_pessoa'
+                      ,'WHERE (UPPER(pes_nome) = '''+UpperCase(edtNome.Text)+''''
+                               ,'and pes_datanasc = '''+FormatDateTime('yyyy-mm-dd',StrToDate(medtDtNasc.Text))+''')']);
+        if ADOQuery2.RecordCount > 0 then
+          begin
+            Application.MessageBox(PChar('"'+edtNome.Text+'" já está cadastrado na base de dados')
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            edtNome.SetFocus;
+            Exit;
+          end;
+        if Acao = 'ADICIONAR' then
+          begin
+            descAcao := 'adicionado';
+            SQL(ADOQuery,['INSERT INTO bs_pessoa '
+                          ,'(pes_nome'
+                          ,',pes_datanasc)'
+                          ,',pes_cpf'
+                          ,',pes_tiposang'
+                          ,',pes_celular'
+                          ,',pes_email)'
+                          ,'VALUES ('''+edtNome.Text+''''
+                                   ,','''+medtDtNasc.Text+''''
+                                   +','''+medtCPF.Text+''''
+                                   +','''+cbTipoSanguineo.Text+''''
+                                   +','''+medtCelular.Text+''''
+                                   +','''+edtEmail.Text+''')']);
+          end
+        else if Acao = 'EDITAR' then
+          begin
+            descAcao := 'editado';
+          end;
+        Atualizar;
+        Acao := EmptyStr;
+        Editado := False;
+        PesID := EmptyStr;
+        PesNome := EmptyStr;
+        Application.MessageBox(PChar('Cadastro '+descAcao+'" com sucesso!')
+                              ,'Informação'
                               ,MB_ICONEXCLAMATION + MB_OK);
-        edtNome.SetFocus;
-        Exit;
       end;
-    if ((Editado) and
-        (Acao = 'ADICIONAR')) then
-      begin
-        descAcao := 'adicionado';
-        SQL(ADOQuery,['INSERT INTO bs_pessoa '
-                      ,'(pes_nome'
-                      ,',pes_datanasc)'
-                      ,',pes_cpf'
-                      ,',pes_tiposang'
-                      ,',pes_celular'
-                      ,',pes_email)'
-                      ,'VALUES ('''+edtNome.Text+''''
-                               ,','''+FormatDateTime('YYYY-mm-dd',StrToDate(medtDtNasc.Text))+''''
-                               +','''+medtCPF.Text+''''
-                               +','''+cbTipoSanguineo.Text+''''
-                               +','''+medtCelular.Text+''''
-                               +','''+edtEmail.Text+''')']);
-      end
-    else if Acao = 'EDITAR' then
-      begin
-        descAcao := 'editado';
-      end;
-    Atualizar;
-    Acao := EmptyStr;
-    Editado := False;
-    PesID := EmptyStr;
-    PesNome := EmptyStr;
-    Application.MessageBox(PChar('Cadastro '+descAcao+'" com sucesso!')
-                          ,'Informação'
-                          ,MB_ICONEXCLAMATION + MB_OK);
   except on E: exception do
     begin
       if E.ClassName <> 'EAbort' then
@@ -219,7 +291,10 @@ end;
 
 procedure TfrmArqPessoa.edtNomeKeyPress(Sender: TObject; var Key: Char);
 begin
-  Editado := Enabled;
+  if not (Key in (['a'..'z','A'..'Z','0'..'9'])) then
+    Key := #0
+  else
+    Editado := Enabled;
 end;
 
 procedure TfrmArqPessoa.FormShow(Sender: TObject);
