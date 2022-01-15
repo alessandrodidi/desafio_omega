@@ -8,7 +8,7 @@ uses
   procedure Encerrar;
   procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
   procedure EncerrarConexao(Conn: TADOConnection);
-  procedure SQLQuery(SQLQ: TADOQuery; Syntax: Array of String);
+  procedure SQL(SQLQ: TADOQuery; Syntax: Array of String);
 
 implementation
 
@@ -94,34 +94,27 @@ begin
   end;
 end;
 
-//procedure para executar as consultas
-procedure SQLQuery(SQLQ: TADOQuery; Syntax: Array of String);
+//procedure para executar comandos query
+procedure SQL(SQLQ: TADOQuery; Syntax: Array of String);
 var
   i: Integer;
+  Command: String;
 begin
   try
     SQLQ.Close;
     SQLQ.SQL.Clear;
-    //Verifica se o comando a ser executado é um SELECT
-    if CompareText(Copy(Syntax[0],1,6),'SELECT') = 0 then
+    //Insere a syntax no componente Query
+    for i := low(Syntax) to high(Syntax) do
       begin
-        //Insere a sentença sql no componente query
-        for i := low(Syntax) to high(Syntax) do
-          begin
-            if Syntax[i] <> EmptyStr then
-              SQLQ.SQL.Add(Syntax[i]);
-          end;
-        //Abre o componente Query e executa a sentaça inserida
-        SQLQ.Open;
-      end
-    else
-      begin
-        //Caso tente executar um query com comando diferente de SELECT sai da rotina
-        SQLQ.Close;
-        Application.MessageBox('Neste módulo são permitidas apenas consultas'
-                              ,'Aviso'
-                              ,MB_ICONEXCLAMATION + MB_OK);
+        if Syntax[i] <> EmptyStr then
+          SQLQ.SQL.Add(Syntax[i]);
+          Command := Copy(Syntax[0],1,6);
       end;
+    //Verifica se o comando for um SELECT abre o componente, caso contrário executa a sentença
+    if CompareText(Copy(Syntax[0],1,6),'SELECT') = 0 then
+      SQLQ.Open
+    else
+      SQLQ.ExecSQL;
   except on E: exception do
     begin
       //Em caso de erro fecha a conexão com o componente query, apresenta mensagem de erro e aporta a rotina
@@ -133,35 +126,6 @@ begin
                             ,MB_ICONERROR + MB_OK);
       Abort;
     end;
-  end;
-end;
-
-//procedure para enviar
-procedure SQLExec(SQLQ: TADOQuery; Syntax: Array of String);
-var
-  i: Integer;
-  Command: String;
-begin
-  try
-    SQLQ.Close;
-    SQLQ.SQL.Clear;
-    for i := low(Syntax) to high(Syntax) do
-      begin
-        if Syntax[i] <> EmptyStr then
-          SQLQ.SQL.Add(Syntax[i]);
-          Command := Copy(Syntax[0],1,6);
-      end;
-    if CompareText(Copy(Syntax[0],1,6),'SELECT') = 0 then
-      SQLQ.Open
-    else
-      SQLQ.ExecSQL;
-  except on E: exception do
-    begin
-      SQLQ.Close;
-      //SQLQ.Free;
-      Application.MessageBox(PChar('Falha na execução da senteça SQL'+#13#13+'Detalhes: '+E.Message),'Erro SQL',MB_ICONERROR + MB_OK);
-      Abort;
-    end
   end;
 end;
 

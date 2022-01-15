@@ -13,6 +13,7 @@ object frmArqPessoa: TfrmArqPessoa
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object gpbxCadastro: TGroupBox
@@ -23,8 +24,6 @@ object frmArqPessoa: TfrmArqPessoa
     Align = alTop
     Caption = 'Cadastro'
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 240
   end
   object pnlComandos: TPanel
     Left = 0
@@ -40,14 +39,31 @@ object frmArqPessoa: TfrmArqPessoa
       Height = 25
       Caption = '&Atualizar'
       TabOrder = 0
+      OnClick = btnAtualizarClick
     end
-    object btnEditar: TButton
+    object btnNovo: TButton
       Left = 83
       Top = 3
       Width = 75
       Height = 25
-      Caption = '&Editar'
+      Caption = '&Novo'
       TabOrder = 1
+    end
+    object btnEditar: TButton
+      Left = 158
+      Top = 3
+      Width = 75
+      Height = 25
+      Caption = '&Editar'
+      TabOrder = 2
+    end
+    object btnExcluir: TButton
+      Left = 233
+      Top = 3
+      Width = 75
+      Height = 25
+      Caption = '&Excluir'
+      TabOrder = 3
     end
   end
   object gpbxPessoas: TGroupBox
@@ -59,16 +75,13 @@ object frmArqPessoa: TfrmArqPessoa
     Caption = 'Pessoas'
     Padding.Top = 5
     TabOrder = 2
-    ExplicitLeft = 344
-    ExplicitTop = 296
-    ExplicitWidth = 185
-    ExplicitHeight = 105
     object dbgPessoas: TDBGrid
       Left = 2
       Top = 20
       Width = 727
       Height = 181
       Align = alClient
+      DataSource = DataSource
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
@@ -77,5 +90,16 @@ object frmArqPessoa: TfrmArqPessoa
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
     end
+  end
+  object ADOQuery: TADOQuery
+    Connection = dmConexao.adocConexao
+    Parameters = <>
+    Left = 344
+    Top = 73
+  end
+  object DataSource: TDataSource
+    DataSet = ADOQuery
+    Left = 416
+    Top = 81
   end
 end

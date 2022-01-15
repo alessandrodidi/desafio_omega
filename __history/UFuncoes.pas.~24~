@@ -1,0 +1,132 @@
+unit UFuncoes;
+
+interface
+
+uses
+  Windows, Forms, SysUtils, Controls, Data.Win.ADODB, IniFiles, Dialogs;
+
+  procedure Encerrar;
+  procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
+  procedure EncerrarConexao(Conn: TADOConnection);
+  procedure SQL(SQLQ: TADOQuery; Syntax: Array of String);
+
+implementation
+
+//procedure para encerrar a aplicação
+procedure Encerrar;
+begin
+  //Solicita confirmação para sair do programa
+  if Application.MessageBox('Deseja sair do sistema?'
+                           ,'Confirmação'
+                           ,MB_ICONQUESTION + MB_YESNO) = mrYes then
+    //Casso ação seja confirma encerra a aplicação
+    Application.Terminate
+  else
+    //senão aporta o procedimento
+    Abort;
+end;
+
+//procedure para iniciar a conexao com o banco de dados
+procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
+var
+  CaminhoArqIni, DadosConexao: String;
+  ArqIni: TIniFile;
+begin
+  //Pega o caminho do arquivo de INI de configuração, que deve estar junto com o executável do programa
+  CaminhoArqIni := ExtractFilePath(Application.ExeName)+ArqConfBD;
+  //Verifica se o arquivo INI existe no diretorio do programa
+  if FileExists(CaminhoArqIni) then
+    begin
+      try
+        //Inicializa o arquivo INI
+        ArqIni := TIniFile.Create(CaminhoArqIni);
+        //Passa os parâmetros de conexão para a variável DadosConexao
+        DadosConexao := ArqIni.ReadString('CONEXAO','CONEXAO','');
+      except
+        //Em caso de erro libera arquivo INI da memória e apresenta mensagem
+        ArqIni.Free;
+        Application.MessageBox('Falha ao ler o arquivo de configuração','Erro', MB_ICONERROR + MB_OK);
+      end;
+    end
+  else
+    begin
+      //Se o arquivo INI não for encontrado no diretório do programa apresenta mensagem
+      Application.MessageBox(PChar('O arquivo de configuração não foi encontrado'+#13#13
+                                  +'Arquivo: '+ArqConfBD)
+                             ,'Erro'
+                             ,MB_ICONSTOP + MB_OK);
+    end;
+  try
+     Conn.ConnectionString := DadosConexao;
+     Conn.Connected := True;
+  except on E: exception do
+    begin
+      //Em caso de erro ao conectar ao banco de dados libera o conector da memória e encerra a aplicação
+      Conn.Free;
+      Application.MessageBox(PChar('Não foi possível se conectar ao banco de dados'+#13
+                                  +'O sistema será encerrado!'+#13#13
+                                  +'Classe '+E.ClassName+#13
+                                  +'Detalhes: '+E.Message)
+                            ,'Erro'
+                            ,MB_ICONERROR + MB_OK);
+      Application.Terminate;
+    end;
+  end;
+end;
+
+//procedure para encerrar a conexao com o banco de dados
+procedure EncerrarConexao(Conn: TADOConnection);
+begin
+  try
+    //Tenta encerrar a conexão com o banco de dados
+    Conn.Connected := False;
+  except on E: exception do
+    begin
+      //Em caso de erro libera o conector da memória e encerra a aplicação
+      Conn.Free;
+      Application.MessageBox(PChar('Falha ao desconectar o banco de dados'+#13#13
+                                  +'Classe '+E.ClassName+#13
+                                  +'Detalhes: '+E.Message)
+                            ,'Erro'
+                            ,MB_ICONERROR + MB_OK);
+      Application.Terminate;
+    end;
+  end;
+end;
+
+//procedure para executar comandos query
+procedure SQLQuery(SQLQ: TADOQuery; Syntax: Array of String);
+var
+  i: Integer;
+  Command: String;
+begin
+  try
+    SQLQ.Close;
+    SQLQ.SQL.Clear;
+    //Insere a syntax no componente Query
+    for i := low(Syntax) to high(Syntax) do
+      begin
+        if Syntax[i] <> EmptyStr then
+          SQLQ.SQL.Add(Syntax[i]);
+          Command := Copy(Syntax[0],1,6);
+      end;
+    //Verifica se o comando for um SELECT abre o componente, caso contrário executa a sentença
+    if CompareText(Copy(Syntax[0],1,6),'SELECT') = 0 then
+      SQLQ.Open
+    else
+      SQLQ.ExecSQL;
+  except on E: exception do
+    begin
+      //Em caso de erro fecha a conexão com o componente query, apresenta mensagem de erro e aporta a rotina
+      SQLQ.Close;
+      Application.MessageBox(PChar('Falha na execução da senteça SQL'+#13#13
+                                  +'Classe '+E.ClassName+#13
+                                  +'Detalhes: '+E.Message)
+                            ,'Erro'
+                            ,MB_ICONERROR + MB_OK);
+      Abort;
+    end;
+  end;
+end;
+
+end.
