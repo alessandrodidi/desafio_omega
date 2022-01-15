@@ -3,9 +3,10 @@ unit UFuncoes;
 interface
 
 uses
-  Windows, Forms, SysUtils, Controls, Data.Win.ADODB;
+  Windows, Forms, SysUtils, Controls, Data.Win.ADODB, IniFiles, Dialogs;
 
   procedure Encerrar;
+  procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
 
 implementation
 
@@ -21,40 +22,28 @@ begin
     Abort;
 end;
 
-procedure InciarConexao(Conn: TADOConnection; BDConf: String);
+procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
 var
-  IniDBConf, Alias, DatabaseName: String;
+  CaminhoArqIni, DadosConexao: String;
+  ArqIni: TIniFile;
 begin
-  with Conn do
+  CaminhoArqIni := ExtractFilePath(Application.ExeName)+ArqConfBD;
+  ShowMessage(CaminhoArqIni);
+  if FileExists(CaminhoArqIni) then
     begin
       try
-        IniDBConf := ReadIni(IniSysConf,'DatabaseSettings','AliasFile');
-        Alias := ReadIni(IniUserPref,'Alias','AliasName');
-        DatabaseName := ReadIni(IniDBConf,Alias,'Database');
-        if CheckIniSessionExists(IniDBConf,Alias) then
-          begin
-            ConnectionName := ReadIni(IniDBConf,Alias,'ConnectionName');
-            DriverName := ReadIni(IniDBConf,Alias,'DriverName');
-            GetDriverFunc := ReadIni(IniDBConf,Alias,'GetDriverFunc');
-            LibraryName := ReadIni(IniDBConf,Alias,'LibraryName');
-            LoginPrompt := StrToBool(ReadIni(IniDBConf,Alias,'LoginPrompt'));
-            VendorLib := ReadIni(IniDBConf,Alias,'VendorLib');
+        ArqIni := TIniFile.Create(CaminhoArqIni);
 
-            LoadParamsFromIniFile(IniDBConf);
-
-            Connected := True;
-          end
-        else
-          begin
-            Application.MessageBox(PChar('Não foi possível localizar a conexão com o banco de dados '+Alias),'Aviso',MB_ICONEXCLAMATION + MB_OK);
-          end;
-      except on E: exception do
-        begin
-          Connected := False;
-          Application.MessageBox(PChar('Não foi possível se conectar ao banco de dados '+DatabaseName+#13#13+'Detalhes: '+E.Message),'Erro de conexão',MB_ICONERROR + MB_OK);
-          Exit;
-        end;
+        DadosConexao := ArqIni.ReadString('CONEXAO','CONEXAO','');
+      except
+        ArqIni.Free;
+        Application.MessageBox('Falha ao ler o arquivo de configuração','Erro', MB_ICONERROR + MB_OK);
       end;
+    end
+  else
+    begin
+      ArqIni.Free;
+      Application.MessageBox(PChar('O arquivo de configuração não foi encontrado'+#13#13+'Arquivo: '+ArqConfBD),'Erro', MB_ICONSTOP + MB_OK);
     end;
 end;
 

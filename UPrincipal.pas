@@ -21,6 +21,7 @@ type
     procedure miArqPessoaClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure miSisSairClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -33,7 +34,7 @@ var
 implementation
 
 uses
-  UFuncoes, UArqPessoa;
+  UFuncoes, UConexao, UArqPessoa;
 
 {$R *.dfm}
 
@@ -41,6 +42,11 @@ procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   //Chama o procedimento de encerramento da aplicação
   Encerrar;
+end;
+
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  InciarConexao(dmConexao.adocConexao, 'conexao.ini');
 end;
 
 procedure TfrmPrincipal.miArqPessoaClick(Sender: TObject);

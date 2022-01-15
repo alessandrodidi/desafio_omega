@@ -15,6 +15,7 @@ object frmPrincipal: TfrmPrincipal
   Position = poScreenCenter
   WindowState = wsMaximized
   OnClose = FormClose
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object sbBarraStatusPrincipal: TStatusBar
@@ -23,9 +24,6 @@ object frmPrincipal: TfrmPrincipal
     Width = 755
     Height = 19
     Panels = <>
-    ExplicitLeft = 272
-    ExplicitTop = 368
-    ExplicitWidth = 0
   end
   object mmMenuPrincipal: TMainMenu
     Left = 352
