@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2019/11/27 22:30:41.000.528,=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/04 10:18:41.000.903,=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/04 10:22:10.000.694,=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/04 14:28:17.000.310,=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2022/01/15 06:46:10.837,=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2022/01/15 06:46:49.719,D:\Desenvolvimento\Delphi\Desafio_Omega\UPrincipal.dfm=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2022/01/15 06:46:49.719,D:\Desenvolvimento\Delphi\Desafio_Omega\UPrincipal.pas=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2022/01/15 06:47:20.658,D:\Desenvolvimento\Delphi\Desafio_Omega\BancoSangue.dproj=C:\Users\Alessandro\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+  </Transactions>
+</BorlandProject>
