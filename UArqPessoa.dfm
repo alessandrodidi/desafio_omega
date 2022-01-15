@@ -170,6 +170,7 @@ object frmArqPessoa: TfrmArqPessoa
       Height = 25
       Caption = '&Cancelar'
       TabOrder = 8
+      OnClick = btnCancelarClick
     end
   end
   object pnlComandos: TPanel

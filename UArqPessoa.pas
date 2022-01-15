@@ -53,6 +53,8 @@ type
     procedure cbTipoSanguineoSelect(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
     procedure Salvar;
+    procedure Cancelar;
+    procedure btnCancelarClick(Sender: TObject);
   private
     PesID, PesNome, Acao: String;
     Editado: Boolean;
@@ -74,6 +76,11 @@ uses
 procedure TfrmArqPessoa.btnAtualizarClick(Sender: TObject);
 begin
   Atualizar;
+end;
+
+procedure TfrmArqPessoa.btnCancelarClick(Sender: TObject);
+begin
+  Cancelar;
 end;
 
 procedure TfrmArqPessoa.Atualizar;
@@ -194,15 +201,15 @@ begin
           begin
             descAcao := 'editado';
           end;
-        Atualizar;
         Acao := EmptyStr;
         Editado := False;
         PesID := EmptyStr;
         PesNome := EmptyStr;
         HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
+        Atualizar;
         Application.MessageBox(PChar('Cadastro '+descAcao+' com sucesso!')
                               ,'Informação'
-                              ,MB_ICONEXCLAMATION + MB_OK);
+                              ,MB_ICONINFORMATION + MB_OK);
       end;
   except on E: exception do
     begin
@@ -217,10 +224,39 @@ begin
   end;
 end;
 
+procedure TfrmArqPessoa.Cancelar;
+begin
+  if Editado then
+    begin
+      if Application.MessageBox('Deseja cancelar a inserção/edição?'
+                                ,'Confirmação'
+                                ,MB_ICONQUESTION + MB_YESNO) = mrYes then
+        begin
+          Acao := EmptyStr;
+          Editado := False;
+          PesID := EmptyStr;
+          PesNome := EmptyStr;
+          LimparForm(Self);
+          HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
+          dbgPessoas.SelectedRows.Clear;
+          Atualizar;
+        end
+      else
+        Abort;
+    end
+  else
+    begin
+      HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
+      dbgPessoas.SelectedRows.Clear;
+    end;
+end;
+
 procedure TfrmArqPessoa.Excluir;
 begin
   try
-    if dbgPessoas.SelectedRows.Count > 0 then
+    PesID := dbgPessoas.DataSource.DataSet.FieldByName('id').Text;
+    PesNome := dbgPessoas.DataSource.DataSet.FieldByName('nome').Text;
+    if PesID <> EmptyStr then
       begin
         PesNome := dbgPessoas.Columns.Items[1].Field.Text;
         PesID := dbgPessoas.Columns.Items[0].Field.Text;
@@ -228,21 +264,24 @@ begin
                                  ,'Confirmação'
                                  ,MB_ICONQUESTION + MB_YESNO) = mrYes then
           begin
-            SQL(ADOQuery,['DELETE FROM bs_pessoa'
-                     +'WHERE pes_id = '+PesID]);
+            SQL(ADOQuery2,['SELECT * FROM bs_pessoa']);
+            SQL(ADOQuery2,['DELETE FROM bs_pessoa'
+                         ,'WHERE pes_id = '+PesID]);
             Atualizar;
-            PesID := EmptyStr;
-            PesNome := EmptyStr;
             Application.MessageBox(PChar('Cadastro de "'+PesNome+'" excluído com sucesso!')
                                   ,'Informação'
-                                  ,MB_ICONEXCLAMATION + MB_OK);
+                                  ,MB_ICONINFORMATION + MB_OK);
+            PesID := EmptyStr;
+            PesNome := EmptyStr;
           end;
       end;
   except on E: exception do
     begin
       if E.ClassName <> 'EAbort' then
         begin
-          Application.MessageBox(PChar('Erro ao tentar excluir o cadastro de "'+PesNome+'"')
+          Application.MessageBox(PChar('Erro ao tentar excluir o cadastro de "'+PesNome+'"'+#13#13
+                                +'Classe '+E.ClassName+#13
+                                +'Detalhes: '+E.Message)
                                 ,'Erro'
                                 ,MB_ICONERROR + MB_OK);
           Abort;
@@ -253,10 +292,23 @@ end;
 
 procedure TfrmArqPessoa.btnEditarClick(Sender: TObject);
 begin
-  if dbgPessoas.SelectedRows.Count > 0 then
+  PesID := dbgPessoas.DataSource.DataSet.Fields[0].AsString;
+
+  if PesID <> EmptyStr then
     begin
       Acao := 'EDITAR';
-      HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
+      Cancelar;
+      HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
+      SQL(ADOQuery2,['SELECT *'
+                    ,'FROM bs_pessoa'
+                    ,'WHERE pes_id = '+PesID]);
+      edtID.Text := ADOQuery2.FieldByName('pes_id').Text;
+      edtNome.Text := ADOQuery2.FieldByName('pes_nome').Text;
+      medtDtNasc.Text := ADOQuery2.FieldByName('pes_datanasc').Text;
+      medtCPF.Text := ADOQuery2.FieldByName('pes_cpf').Text;
+      cbTipoSanguineo.ItemIndex := cbTipoSanguineo.Items.IndexOf(ADOQuery2.FieldByName('pes_tiposang').Text);
+      medtCelular.Text := ADOQuery2.FieldByName('pes_celular').Text;
+      edtEmail.Text := ADOQuery2.FieldByName('pes_email').Text;
     end;
 end;
 
@@ -268,6 +320,7 @@ end;
 procedure TfrmArqPessoa.btnNovoClick(Sender: TObject);
 begin
   Acao := 'ADICIONAR';
+  Cancelar;
   HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
 end;
 
