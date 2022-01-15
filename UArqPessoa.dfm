@@ -160,6 +160,7 @@ object frmArqPessoa: TfrmArqPessoa
       Height = 25
       Caption = '&Salvar'
       TabOrder = 7
+      OnClick = btnSalvarClick
     end
     object btnCancelar: TButton
       Left = 83

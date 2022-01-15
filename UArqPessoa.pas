@@ -50,6 +50,8 @@ type
     procedure medtCelularKeyPress(Sender: TObject; var Key: Char);
     procedure edtEmailKeyPress(Sender: TObject; var Key: Char);
     procedure cbTipoSanguineoSelect(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
+    procedure Salvar;
   private
     PesID, PesNome, Acao: String;
     Editado: Boolean;
@@ -85,6 +87,62 @@ begin
                ,'FROM bs_pessoa']);
 end;
 
+procedure TfrmArqPessoa.Salvar;
+var
+  descAcao: String;
+begin
+  try
+    if edtNome.Text = EmptyStr then
+      begin
+        Application.MessageBox('Informe o nome'
+                              ,'Aviso'
+                              ,MB_ICONEXCLAMATION + MB_OK);
+        edtNome.SetFocus;
+        Exit;
+      end;
+    if ((Editado) and
+        (Acao = 'ADICIONAR')) then
+      begin
+        descAcao := 'adicionado';
+        SQL(ADOQuery,['INSERT INTO bs_pessoa '
+                      ,'(pes_nome'
+                      ,',pes_datanasc)'
+                      ,',pes_cpf'
+                      ,',pes_tiposang'
+                      ,',pes_celular'
+                      ,',pes_email)'
+                      ,'VALUES ('''+edtNome.Text+''''
+                               ,','''+FormatDateTime('YYYY-mm-dd',StrToDate(medtDtNasc.Text))+''''
+                               +','''+medtCPF.Text+''''
+                               +','''+cbTipoSanguineo.Text+''''
+                               +','''+medtCelular.Text+''''
+                               +','''+edtEmail.Text+''')']);
+      end
+    else if Acao = 'EDITAR' then
+      begin
+        descAcao := 'editado';
+      end;
+    Atualizar;
+    Acao := EmptyStr;
+    Editado := False;
+    PesID := EmptyStr;
+    PesNome := EmptyStr;
+    Application.MessageBox(PChar('Cadastro '+descAcao+'" com sucesso!')
+                          ,'Informação'
+                          ,MB_ICONEXCLAMATION + MB_OK);
+  except on E: exception do
+    begin
+      if E.ClassName <> 'EAbort' then
+        begin
+          Application.MessageBox(PChar('Erro ao tentar salvar o cadastro')
+                                ,'Erro'
+                                ,MB_ICONERROR + MB_OK);
+          Abort;
+        end;
+    end;
+  end;
+end;
+
 procedure TfrmArqPessoa.Excluir;
 begin
   try
@@ -98,14 +156,23 @@ begin
           begin
             SQL(ADOQuery,['DELETE FROM bs_pessoa'
                      +'WHERE pes_id = '+PesID]);
+            Atualizar;
+            PesID := EmptyStr;
+            PesNome := EmptyStr;
+            Application.MessageBox(PChar('Cadastro de "'+PesNome+'" excluído com sucesso!')
+                                  ,'Informação'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
           end;
       end;
   except on E: exception do
     begin
-      Application.MessageBox(PChar('Erro ao tentar excluir o cadastro de "'+PesNome+'"')
-                            ,'Erro'
-                            ,MB_ICONERROR + MB_OK);
-      Abort;
+      if E.ClassName <> 'EAbort' then
+        begin
+          Application.MessageBox(PChar('Erro ao tentar excluir o cadastro de "'+PesNome+'"')
+                                ,'Erro'
+                                ,MB_ICONERROR + MB_OK);
+          Abort;
+        end;
     end;
   end;
 end;
@@ -126,6 +193,11 @@ end;
 procedure TfrmArqPessoa.btnNovoClick(Sender: TObject);
 begin
   Acao := 'ADICIONAR';
+end;
+
+procedure TfrmArqPessoa.btnSalvarClick(Sender: TObject);
+begin
+  Salvar;
 end;
 
 procedure TfrmArqPessoa.cbTipoSanguineoSelect(Sender: TObject);
