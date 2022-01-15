@@ -22,6 +22,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure miSisSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure miProcDoacaoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,7 +35,7 @@ var
 implementation
 
 uses
-  UFuncoes, UConexao, UArqPessoa;
+  UFuncoes, UConexao, UArqPessoa, UProcDoacao;
 
 {$R *.dfm}
 
@@ -61,6 +62,20 @@ begin
   else
     //Caso o formulário já tenha sido criado apenas o abre
     frmArqPessoa.ShowModal;
+end;
+
+procedure TfrmPrincipal.miProcDoacaoClick(Sender: TObject);
+begin
+  //Ferifica se o formulário já foi criado
+  if frmProcDoacao = Nil then
+    begin
+      //Caso o formulário não tenha sido criado, cria-o e o abre
+      frmProcDoacao := TfrmProcDoacao.Create(Self);
+      frmProcDoacao.ShowModal;
+    end
+  else
+    //Caso o formulário já tenha sido criado apenas o abre
+    frmProcDoacao.ShowModal;
 end;
 
 procedure TfrmPrincipal.miSisSairClick(Sender: TObject);

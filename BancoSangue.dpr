@@ -3,7 +3,7 @@ program BancoSangue;
 uses
   Vcl.Forms,
   UPrincipal in 'UPrincipal.pas' {frmPrincipal},
-  UArqPessoa in 'UArqPessoa.pas' {frmArqPessoa},
+  UProcDoacao in 'UProcDoacao.pas' {frmProcDoacao},
   UFuncoes in 'UFuncoes.pas',
   UConexao in 'UConexao.pas' {dmConexao: TDataModule};
 

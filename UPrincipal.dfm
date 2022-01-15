@@ -46,6 +46,7 @@ object frmPrincipal: TfrmPrincipal
       Caption = '&Processo'
       object miProcDoacao: TMenuItem
         Caption = '&Doa'#231#227'o'
+        OnClick = miProcDoacaoClick
       end
     end
     object miRelatorio: TMenuItem
