@@ -1,0 +1,53 @@
+unit UFuncoes;
+
+interface
+
+uses
+  Windows, Forms, SysUtils, Controls, Data.Win.ADODB, IniFiles, Dialogs;
+
+  procedure Encerrar;
+  procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
+
+implementation
+
+procedure Encerrar;
+begin
+  //Solicita confirmação para sair do programa
+  if Application.MessageBox('Deseja sair do sistema?'
+                           ,'Confirmação'
+                           ,MB_ICONQUESTION + MB_YESNO) = mrYes then
+    //Casso ação seja confirma encerra a aplicação
+    Application.Terminate
+  else
+    Abort;
+end;
+
+procedure InciarConexao(Conn: TADOConnection; ArqConfBD: String);
+var
+  CaminhoArqIni, DadosConexao: String;
+  ArqIni: TIniFile;
+begin
+  //Pega o caminho do arquivo de INI de configuração, que deve estar junto com o executável do programa
+  CaminhoArqIni := ExtractFilePath(Application.ExeName)+ArqConfBD;
+  //Verifica se o arquivo INI existe no diretorio do programa
+  if FileExists(CaminhoArqIni) then
+    begin
+      try
+        //Inicializa o arquivo INI
+        ArqIni := TIniFile.Create(CaminhoArqIni);
+        //Passa os parâmetros de conexão para a variável DadosConexao
+        DadosConexao := ArqIni.ReadString('CONEXAO','CONEXAO','');
+      except
+        //Em caso de erro libera arquivo INI da memória e apresenta mensagem
+        ArqIni.Free;
+        Application.MessageBox('Falha ao ler o arquivo de configuração','Erro', MB_ICONERROR + MB_OK);
+      end;
+    end
+  else
+    begin
+      //Se o arquivo INI não for encontrado no diretório do programa apresenta mensagem
+      Application.MessageBox(PChar('O arquivo de configuração não foi encontrado'+#13#13+'Arquivo: '+ArqConfBD),'Erro', MB_ICONSTOP + MB_OK);
+    end;
+end;
+
+end.
