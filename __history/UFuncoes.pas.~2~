@@ -1,0 +1,22 @@
+unit UFuncoes;
+
+interface
+
+uses
+  Windows, Forms, SysUtils, Controls;
+
+implementation
+
+procedure Encerrar;
+begin
+  //Solicita confirmação para sair do programa
+  if Application.MessageBox('Deseja realmente sair do programa?'
+                           ,'Confirmação'
+                           ,MB_ICONQUESTION + MB_YESNO) = mrYes then
+    //Casso ação seja confirma encerra a aplicação
+    Application.Terminate
+  else
+    Abort;
+end;
+
+end.

@@ -12,8 +12,9 @@ object frmPrincipal: TfrmPrincipal
   Font.Style = []
   Menu = mmMenuPrincipal
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   WindowState = wsMaximized
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object sbBarraStatusPrincipal: TStatusBar
@@ -33,6 +34,7 @@ object frmPrincipal: TfrmPrincipal
       Caption = '&Sistema'
       object miSisSair: TMenuItem
         Caption = 'Sai&r'
+        OnClick = miSisSairClick
       end
     end
     object miArquivo: TMenuItem

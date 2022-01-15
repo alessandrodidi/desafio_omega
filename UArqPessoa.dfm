@@ -1,7 +1,7 @@
 object frmArqPessoa: TfrmArqPessoa
   Left = 0
   Top = 0
-  BorderIcons = [biMinimize]
+  BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Banco de Sangue [Pessoa]'
   ClientHeight = 429
   ClientWidth = 731
@@ -12,7 +12,7 @@ object frmArqPessoa: TfrmArqPessoa
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object gpbxCadastro: TGroupBox
