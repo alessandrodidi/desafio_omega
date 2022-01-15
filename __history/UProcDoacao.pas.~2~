@@ -9,30 +9,33 @@ uses
 
 type
   TfrmProcDoacao = class(TForm)
-    gpbxPessoa: TGroupBox;
+    gpbxCadastro: TGroupBox;
     pnlComandos: TPanel;
     btnAtualizar: TButton;
     btnNovo: TButton;
-    gpbxDoacoes: TGroupBox;
+    gpbxPessoas: TGroupBox;
     dbgPessoas: TDBGrid;
     ADOQuery: TADOQuery;
     DataSource: TDataSource;
     btnEditar: TButton;
     btnExcluir: TButton;
-    ADOQuery2: TADOQuery;
-    edtID: TEdit;
     lblID: TLabel;
     lblNome: TLabel;
+    lblDtNasc: TLabel;
+    lblCPF: TLabel;
+    lblTipoSanguineo: TLabel;
+    lblCelular: TLabel;
+    lblEmail: TLabel;
+    edtID: TEdit;
     edtNome: TEdit;
-    gpbxDoacao: TGroupBox;
-    lblIDDoacao: TLabel;
-    Edit1: TEdit;
-    lblData: TLabel;
-    medtDtDoacao: TMaskEdit;
-    lblQtde: TLabel;
-    edtQtde: TEdit;
-    btnIncluir: TButton;
+    medtDtNasc: TMaskEdit;
+    medtCPF: TMaskEdit;
+    cbTipoSanguineo: TComboBox;
+    medtCelular: TMaskEdit;
+    edtEmail: TEdit;
+    btnSalvar: TButton;
     btnCancelar: TButton;
+    ADOQuery2: TADOQuery;
     procedure FormShow(Sender: TObject);
     procedure btnAtualizarClick(Sender: TObject);
     procedure btnEditarClick(Sender: TObject);
@@ -43,19 +46,17 @@ type
       Shift: TShiftState);
     procedure btnNovoClick(Sender: TObject);
     procedure edtNomeKeyPress(Sender: TObject; var Key: Char);
-    procedure medtDtDoacaoKeyPress(Sender: TObject; var Key: Char);
+    procedure medtDtNascKeyPress(Sender: TObject; var Key: Char);
     procedure medtCPFKeyPress(Sender: TObject; var Key: Char);
     procedure medtCelularKeyPress(Sender: TObject; var Key: Char);
     procedure edtEmailKeyPress(Sender: TObject; var Key: Char);
     procedure cbTipoSanguineoSelect(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
-    procedure Incluir;
+    procedure Salvar;
     procedure Cancelar;
     procedure btnCancelarClick(Sender: TObject);
-    procedure edtQtdeKeyPress(Sender: TObject; var Key: Char);
-    procedure btnIncluirClick(Sender: TObject);
   private
-    Doa_ID, PesID, PesNome, Acao: String;
+    PesID, PesNome, Acao: String;
     Editado: Boolean;
     { Private declarations }
   public
@@ -94,7 +95,7 @@ begin
                ,'FROM bs_pessoa']);
 end;
 
-procedure TfrmProcDoacao.Incluir;
+procedure TfrmProcDoacao.Salvar;
 var
   descAcao: String;
 begin
@@ -316,16 +317,16 @@ begin
   Excluir;
 end;
 
-procedure TfrmProcDoacao.btnIncluirClick(Sender: TObject);
-begin
-  Incluir;
-end;
-
 procedure TfrmProcDoacao.btnNovoClick(Sender: TObject);
 begin
   Acao := 'ADICIONAR';
   Cancelar;
   HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
+end;
+
+procedure TfrmProcDoacao.btnSalvarClick(Sender: TObject);
+begin
+  Salvar;
 end;
 
 procedure TfrmProcDoacao.cbTipoSanguineoSelect(Sender: TObject);
@@ -338,14 +339,6 @@ procedure TfrmProcDoacao.dbgPessoasKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_DELETE then
     Excluir;
-end;
-
-procedure TfrmProcDoacao.edtQtdeKeyPress(Sender: TObject; var Key: Char);
-begin
-if not (Key in (['0'..'9',#8,#32,#46])) then
-    Key := #0
-  else
-    Editado := Enabled;
 end;
 
 procedure TfrmProcDoacao.edtEmailKeyPress(Sender: TObject; var Key: Char);
@@ -381,7 +374,7 @@ begin
   Editado := Enabled;
 end;
 
-procedure TfrmProcDoacao.medtDtDoacaoKeyPress(Sender: TObject; var Key: Char);
+procedure TfrmProcDoacao.medtDtNascKeyPress(Sender: TObject; var Key: Char);
 begin
   Editado := Enabled;
 end;

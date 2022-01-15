@@ -49,11 +49,10 @@ type
     procedure edtEmailKeyPress(Sender: TObject; var Key: Char);
     procedure cbTipoSanguineoSelect(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
-    procedure Incluir;
+    procedure Salvar;
     procedure Cancelar;
     procedure btnCancelarClick(Sender: TObject);
     procedure edtQtdeKeyPress(Sender: TObject; var Key: Char);
-    procedure btnIncluirClick(Sender: TObject);
   private
     Doa_ID, PesID, PesNome, Acao: String;
     Editado: Boolean;
@@ -94,7 +93,7 @@ begin
                ,'FROM bs_pessoa']);
 end;
 
-procedure TfrmProcDoacao.Incluir;
+procedure TfrmProcDoacao.Salvar;
 var
   descAcao: String;
 begin
@@ -316,16 +315,16 @@ begin
   Excluir;
 end;
 
-procedure TfrmProcDoacao.btnIncluirClick(Sender: TObject);
-begin
-  Incluir;
-end;
-
 procedure TfrmProcDoacao.btnNovoClick(Sender: TObject);
 begin
   Acao := 'ADICIONAR';
   Cancelar;
   HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
+end;
+
+procedure TfrmProcDoacao.btnSalvarClick(Sender: TObject);
+begin
+  Salvar;
 end;
 
 procedure TfrmProcDoacao.cbTipoSanguineoSelect(Sender: TObject);

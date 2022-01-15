@@ -198,7 +198,6 @@ object frmProcDoacao: TfrmProcDoacao
       Height = 25
       Caption = '&Incluir'
       TabOrder = 3
-      OnClick = btnIncluirClick
     end
     object btnCancelar: TButton
       Left = 83
