@@ -33,7 +33,7 @@ object dmConexao: TdmConexao
       'IsolationLevel=ReadCommitted'
       'OSAuthentication=False'
       'PrepareSQL=True'
-      'OS Authentication=True'
+      'OS Authentication=False'
       'User_Name=sa'
       'Password=qwe@123456')
     Left = 72
