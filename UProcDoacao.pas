@@ -14,7 +14,7 @@ type
     btnAtualizar: TButton;
     btnNovo: TButton;
     gpbxDoacoes: TGroupBox;
-    dbgPessoas: TDBGrid;
+    dbgDoacoes: TDBGrid;
     ADOQuery: TADOQuery;
     DataSource: TDataSource;
     btnEditar: TButton;
@@ -30,17 +30,18 @@ type
     lblData: TLabel;
     medtDtDoacao: TMaskEdit;
     lblQtde: TLabel;
-    btnIncluir: TButton;
+    btnSalvar: TButton;
     btnCancelar: TButton;
     btnLocalizar: TButton;
     edtQtde: TEdit;
+    lblUnidade: TLabel;
     procedure FormShow(Sender: TObject);
     procedure btnAtualizarClick(Sender: TObject);
     procedure btnEditarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
     procedure Atualizar;
     procedure Excluir;
-    procedure dbgPessoasKeyDown(Sender: TObject; var Key: Word;
+    procedure dbgDoacoesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnNovoClick(Sender: TObject);
     procedure edtNomeKeyPress(Sender: TObject; var Key: Char);
@@ -50,16 +51,20 @@ type
     procedure edtEmailKeyPress(Sender: TObject; var Key: Char);
     procedure cbTipoSanguineoSelect(Sender: TObject);
     function LocalizarPessoa(IDPessoa: String): TArray<String>;
-    procedure Incluir;
+    procedure Salvar;
     procedure Cancelar;
     procedure btnCancelarClick(Sender: TObject);
     procedure edtQtdeKeyPress(Sender: TObject; var Key: Char);
-    procedure btnIncluirClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
     procedure edtIDPessoaKeyPress(Sender: TObject; var Key: Char);
     procedure btnLocalizarClick(Sender: TObject);
+    procedure dbgDoacoesDblClick(Sender: TObject);
+    procedure dbgDoacoesDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
-    Doa_ID, PesID, PesNome, DoaID, Acao: String;
+    Doa_ID, PesID, PesNome, PesDtNasc, DoaID, Acao: String;
     Editado: Boolean;
+    QtdeEdicao: Double;
     { Private declarations }
   public
     { Public declarations }
@@ -98,10 +103,14 @@ begin
                ,',D.doa_qtde AS "QUANTIDADE"'
                ,',P.pes_id AS "ID PESSOA"'
                ,',P.pes_nome AS "NOME"'
+               ,',FORMAT(P.pes_datanasc,''dd/MM/yyyy'') AS "NASCIMENTO"'
+               ,',D.doa_status'
                ,'FROM bs_pessoa P'
                      ,'INNER JOIN bs_doacao D'
                             ,'ON D.pes_id = P.pes_id'
-               ,'WHERE '+Filtro]);
+               ,'WHERE '+Filtro
+               ,'ORDER BY P.pes_id, D.doa_data']);
+  dbgDoacoes.Fields[6].Visible := False;
 end;
 
 function TfrmProcDoacao.LocalizarPessoa(IDPessoa: String): TArray<String>;
@@ -118,9 +127,10 @@ begin
                   ,'WHERE pes_id = '+IDPessoa]);
     if ADOQuery2.RecordCount > 0 then
       begin
-        SetLength(Result,2);
+        SetLength(Result,3);
         Result[0] := ADOQuery2.FieldByName('pes_id').Text;
         Result[1] := ADOQuery2.FieldByName('pes_nome').Text;
+        Result[2] := ADOQuery2.FieldByName('pes_datanasc').Text;
       end
     else
       begin
@@ -129,7 +139,8 @@ begin
                               ,MB_ICONEXCLAMATION + MB_OK);
         SetLength(Result,2);
         Result[0] := EmptyStr;
-        Result[0] := EmptyStr;
+        Result[1] := EmptyStr;
+        Result[2] := EmptyStr;
       end;
   except on E: exception do
     begin
@@ -146,9 +157,12 @@ begin
   end;
 end;
 
-procedure TfrmProcDoacao.Incluir;
+procedure TfrmProcDoacao.Salvar;
 var
-  descAcao: String;
+  descAcao, Filtro: String;
+  Idade, DiasUltDoacao: Integer;
+  qtdeDia: Double;
+  DtNasc: TDateTime;
 begin
   try
     if Editado then
@@ -162,7 +176,7 @@ begin
             edtNome.SetFocus;
             Exit;
           end;
-        //valida a data de nascimento
+        //valida a data de doação
         if not ValidarData(medtDtDoacao.Text) then
           begin
             Application.MessageBox('Data inválida'
@@ -171,9 +185,18 @@ begin
             medtDtDoacao.SetFocus;
             Exit;
           end;
+        //Verifica se a data de lançamento é maior do que a data atual
+        if StrToDate(medtDtDoacao.Text) > Now then
+          begin
+            Application.MessageBox('O lançamento não pode ser feito em data futura'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            medtDtDoacao.SetFocus;
+            Exit;
+          end;
         //Verifica a idade - deve estar entre 18 e 60 anos
-        if ((YearsBetween(StrToDate(medtDtDoacao.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) < 18) or
-            (YearsBetween(StrToDate(medtDtDoacao.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) > 60)) then
+        Idade := YearsBetween(StrToDate(PesDtNasc),StrToDate(medtDtDoacao.Text));
+        if ((Idade < 18) or (Idade > 60)) then
           begin
             Application.MessageBox('Idade deve ser entre 18 e 60 anos'
                                   ,'Aviso'
@@ -181,8 +204,25 @@ begin
             medtDtDoacao.SetFocus;
             Exit;
           end;
+        //Verifica se a última data de lançamento é maior que 15 dias
+        SQL(ADOQuery2,['SELECT MAX(doa_data) ultima_doacao'
+                      ,'FROM bs_doacao'
+                      ,'WHERE pes_id = '+PesID
+                            ,'AND doa_status = ''A'''
+                            ,'AND FORMAT(doa_data, ''dd/MM/yyyy'') <> '''+medtDtDoacao.Text+'''']);
+        if ADOQuery2.FieldByName('ultima_doacao').Text <> EmptyStr then
+          DiasUltDoacao := DaysBetween(StrToDate(ADOQuery2.FieldByName('ultima_doacao').Text),StrToDate(medtDtDoacao.Text));
+        if ((ADOQuery2.FieldByName('ultima_doacao').Text <> EmptyStr) and
+            (DiasUltDoacao <= 15)) then
+          begin
+            Application.MessageBox('O intervalo de doações deve ser maior que 15 dias'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            edtQtde.SetFocus;
+            Exit;
+          end;
         //verifica se foi informada a quantidade
-        if edtQtde.Text <> EmptyStr then
+        if edtQtde.Text = EmptyStr then
           begin
             Application.MessageBox('Informe a quantidade'
                                   ,'Aviso'
@@ -199,6 +239,23 @@ begin
             edtQtde.SetFocus;
             Exit;
           end;
+        //consulta lançamentos para a pessoa na mesma data
+        SQL(ADOQuery2,['SELECT sum(doa_qtde) qtde_dia'
+                      ,'FROM bs_doacao'
+                      ,'WHERE pes_id = '+PesID
+                            ,'AND FORMAT(doa_data, ''dd/MM/yyyy'') = '''+medtDtDoacao.Text+''''
+                            ,'AND doa_status = ''A''']);
+        qtdeDia := ADOQuery2.FieldByName('qtde_dia').AsFloat-QtdeEdicao;
+        //valida a quantidade
+        if (qtdeDia+StrToFloat(edtQtde.Text)) > 1000 then
+          begin
+            Application.MessageBox('A quantidade informada excede o limite permitido por doação (1 litro)'
+                                  ,'Aviso'
+                                  ,MB_ICONEXCLAMATION + MB_OK);
+            edtQtde.SetFocus;
+            Exit;
+          end;
+
         if Acao = 'ADICIONAR' then
           begin
             descAcao := 'adicionado';
@@ -215,22 +272,34 @@ begin
         else if Acao = 'EDITAR' then
           begin
             descAcao := 'editado';
+            SQL(ADOQuery,['UPDATE bs_doacao SET'
+                         ,'pes_id = '''+PesID+''''
+                         ,',doa_data = '''+medtDtDoacao.Text+''''
+                         ,',doa_qtde = '''+edtQtde.Text+''''
+                         ,'WHERE doa_id = '+DoaID]);
           end;
         Acao := EmptyStr;
         Editado := False;
         PesID := EmptyStr;
         PesNome := EmptyStr;
-        HDControles([edtIDPessoa,edtNome,edtIDDoacao,medtDtDoacao,edtQtde],False);
+        PesDtNasc := EmptyStr;
+        DoaID := EmptyStr;
+        LimparForm(Self);
+        HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
         Atualizar;
         Application.MessageBox(PChar('Cadastro '+descAcao+' com sucesso!')
                               ,'Informação'
                               ,MB_ICONINFORMATION + MB_OK);
-      end;
+      end
+    else
+
   except on E: exception do
     begin
       if E.ClassName <> 'EAbort' then
         begin
-          Application.MessageBox(PChar('Erro ao tentar salvar o cadastro')
+          Application.MessageBox(PChar('Erro ao tentar salvar dados da doação'+#13#13
+                                      +'Classe '+E.ClassName+#13
+                                      +'Detalhes: '+E.Message)
                                 ,'Erro'
                                 ,MB_ICONERROR + MB_OK);
           Abort;
@@ -249,12 +318,11 @@ begin
         begin
           Acao := EmptyStr;
           Editado := False;
-          PesID := EmptyStr;
-          PesNome := EmptyStr;
           DoaID := EmptyStr;
-          LimparForm(Self);
-          HDControles([edtIDPessoa,edtNome,edtIDDoacao,medtDtDoacao,edtQtde],False);
-          dbgPessoas.SelectedRows.Clear;
+          medtDtDoacao.Text := EmptyStr;
+          edtQtde.Text := EmptyStr;
+          HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
+          dbgDoacoes.SelectedRows.Clear;
           Atualizar;
         end
       else
@@ -262,40 +330,37 @@ begin
     end
   else
     begin
-      HDControles([edtIDPessoa,edtNome,edtIDDoacao,medtDtDoacao,edtQtde],False);
-      dbgPessoas.SelectedRows.Clear;
+      HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
+      dbgDoacoes.SelectedRows.Clear;
     end;
 end;
 
 procedure TfrmProcDoacao.Excluir;
 begin
   try
-    PesID := dbgPessoas.DataSource.DataSet.FieldByName('id').Text;
-    PesNome := dbgPessoas.DataSource.DataSet.FieldByName('nome').Text;
-    if PesID <> EmptyStr then
+    DoaID := dbgDoacoes.DataSource.DataSet.FieldByName('ID DOAÇÃO').Text;
+    if DoaID <> EmptyStr then
       begin
-        PesNome := dbgPessoas.Columns.Items[1].Field.Text;
-        PesID := dbgPessoas.Columns.Items[0].Field.Text;
-        if Application.MessageBox(PChar('Deseja realmente excluir o cadastro de "'+PesNome+'"')
+        if Application.MessageBox(PChar('Deseja realmente excluir o lançamento de doação selecionado?')
                                  ,'Confirmação'
                                  ,MB_ICONQUESTION + MB_YESNO) = mrYes then
           begin
-            SQL(ADOQuery2,['SELECT * FROM bs_pessoa']);
-            SQL(ADOQuery2,['DELETE FROM bs_pessoa'
-                         ,'WHERE pes_id = '+PesID]);
+            //SQL(ADOQuery2,['SELECT * FROM bs_pessoa']);
+            SQL(ADOQuery2,['UPDATE bs_doacao SET'
+                         ,'doa_status = ''I'''
+                         ,'WHERE doa_id = '+DoaID]);
             Atualizar;
-            Application.MessageBox(PChar('Cadastro de "'+PesNome+'" excluído com sucesso!')
+            Application.MessageBox(PChar('Registro excluído com suceso!')
                                   ,'Informação'
                                   ,MB_ICONINFORMATION + MB_OK);
-            PesID := EmptyStr;
-            PesNome := EmptyStr;
+            DoaID := EmptyStr;
           end;
       end;
   except on E: exception do
     begin
       if E.ClassName <> 'EAbort' then
         begin
-          Application.MessageBox(PChar('Erro ao tentar excluir o cadastro de "'+PesNome+'"'+#13#13
+          Application.MessageBox(PChar('Erro ao tentar excluir o lançamento selecionado'+#13#13
                                       +'Classe '+E.ClassName+#13
                                       +'Detalhes: '+E.Message)
                                 ,'Erro'
@@ -308,30 +373,45 @@ end;
 
 procedure TfrmProcDoacao.btnEditarClick(Sender: TObject);
 begin
-  PesID := dbgPessoas.DataSource.DataSet.Fields[0].AsString;
+  DoaID := dbgDoacoes.DataSource.DataSet.Fields[0].AsString;
+  if dbgDoacoes.DataSource.DataSet.FieldByName('doa_status').AsString = 'I' then
+    begin
+      Application.MessageBox('Este lançamento não pode ser editado'
+                            ,'Aviso'
+                            ,MB_ICONEXCLAMATION + MB_OK);
+      Exit;
+    end;
 
-  if PesID <> EmptyStr then
+  if DoaID <> EmptyStr then
     begin
       Acao := 'EDITAR';
       Cancelar;
-      HDControles([edtIDPessoa,edtNome,edtIDDoacao,medtDtDoacao,edtQtde],True);
+      HDControles([medtDtDoacao,edtQtde],True);
       SQL(ADOQuery2,['SELECT *'
                     ,'FROM bs_doacao'
-                    ,'WHERE pes_id = '+PesID]);
+                    ,'WHERE doa_id = '+DoaID]);
       edtIDDoacao.Text := ADOQuery2.FieldByName('doa_id').Text;
       medtDtDoacao.Text := ADOQuery2.FieldByName('doa_data').Text;
       edtQtde.Text := ADOQuery2.FieldByName('doa_qtde').Text;
+      QtdeEdicao := ADOQuery2.FieldByName('doa_qtde').AsFloat;
+      if PesID = EmptyStr then
+        begin
+          PesID := ADOQuery2.FieldByName('pes_id').Text;
+          edtIDPessoa.Text := ADOQuery2.FieldByName('pes_id').Text;
+          btnLocalizar.Click;
+        end;
     end;
 end;
 
 procedure TfrmProcDoacao.btnExcluirClick(Sender: TObject);
 begin
-  Excluir;
+  if dbgDoacoes.DataSource.DataSet.FieldByName('doa_status').AsString <> 'I' then
+    Excluir;
 end;
 
-procedure TfrmProcDoacao.btnIncluirClick(Sender: TObject);
+procedure TfrmProcDoacao.btnSalvarClick(Sender: TObject);
 begin
-  Incluir;
+  Salvar;
 end;
 
 procedure TfrmProcDoacao.btnLocalizarClick(Sender: TObject);
@@ -342,6 +422,7 @@ begin
       if PesID <> EmptyStr then
         begin
           PesNome := LocalizarPessoa(edtIDPessoa.Text)[1];
+          PesDtNasc := LocalizarPessoa(edtIDPessoa.Text)[2];
           edtIDPessoa.Text := PesID;
           edtNome.Text := PesNome;
           Atualizar;
@@ -371,9 +452,20 @@ end;
 
 procedure TfrmProcDoacao.btnNovoClick(Sender: TObject);
 begin
+  if PesID = EmptyStr then
+    begin
+      Application.MessageBox('Selecione a pessoa'
+                            ,'Aviso'
+                            ,MB_ICONEXCLAMATION + MB_OK);
+      edtIDPessoa.SetFocus;
+      Exit;
+    end;
+
   Acao := 'ADICIONAR';
   Cancelar;
-  HDControles([edtIDPessoa,edtNome,edtIDDoacao,medtDtDoacao,edtQtde],True);
+  HDControles([medtDtDoacao,edtQtde],True);
+  medtDtDoacao.Text := FormatDateTime('DD/MM/YYYY', Now);
+  medtDtDoacao.SetFocus;
 end;
 
 procedure TfrmProcDoacao.cbTipoSanguineoSelect(Sender: TObject);
@@ -381,7 +473,20 @@ begin
   Editado := Enabled;
 end;
 
-procedure TfrmProcDoacao.dbgPessoasKeyDown(Sender: TObject; var Key: Word;
+procedure TfrmProcDoacao.dbgDoacoesDblClick(Sender: TObject);
+begin
+  btnEditar.Click;
+end;
+
+procedure TfrmProcDoacao.dbgDoacoesDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  If ADOQuery.FieldByName('doa_status').Text = 'I' then
+    dbgDoacoes.Canvas.Font.Color:= clRed;
+  dbgDoacoes.DefaultDrawDataCell(Rect, dbgDoacoes.columns[datacol].field, State);
+end;
+
+procedure TfrmProcDoacao.dbgDoacoesKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_DELETE then

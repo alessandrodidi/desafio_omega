@@ -28,6 +28,7 @@ type
     pnlComandos: TPanel;
     dbgResultados: TDBGrid;
     DataSource: TDataSource;
+    btnUtilizar: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure cbCriterio_1Change(Sender: TObject);
@@ -41,6 +42,7 @@ type
     procedure sbtnPesquisarClick(Sender: TObject);
     procedure Atualizar;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnUtilizarClick(Sender: TObject);
   private
     nCriterios, idObj, posObjeto: Integer;
     posObjetos: Array of Array of Integer;
@@ -63,6 +65,47 @@ uses
   UFuncoes, UConexao, UProcDoacao;
 
 {$R *.dfm}
+
+procedure TfrmLocalizar.btnUtilizarClick(Sender: TObject);
+begin
+  try
+  if ADOQuery.Fields.Fields[0].Text = EmptyStr then
+    begin
+      Application.MessageBox(PChar('Selecione um registro para utilizar')
+                            ,'Aviso'
+                            ,MB_ICONEXCLAMATION + MB_OK);
+      Exit;
+    end;
+
+  if RefConsulta = 'Doação (Pessoa)' then
+      begin
+        frmProcDoacao.edtIDPessoa.Text := ADOQuery.Fields.FieldByName('ID').Text;
+        frmProcDoacao.btnLocalizar.Click;
+      end
+    else
+      begin
+        Application.MessageBox(PChar('Não foram encontrados parâmetros para o retorno da pesquisa em '''+RefConsulta+''''+#13
+                                    +'A operação será abortada e não haverão resultados selecionados'+#13#13
+                                    +'- Entre em contato com o administrador do sistema para reportar o problema')
+                              ,'Aviso'
+                              ,MB_ICONEXCLAMATION + MB_OK);
+        Abort;
+      end;
+  Self.Close;
+
+  except on E: exception do
+    begin
+      if E.ClassName <> 'EAbort' then
+        begin
+          Application.MessageBox(PChar('Erro ao utilizar o registro'+#13+#13
+                                      +'Classe '+E.ClassName+#13
+                                      +'Detalhes: '+E.Message)
+                                ,'Erro'
+                                ,MB_ICONERROR + MB_OK);
+        end;
+    end;
+  end;
+end;
 
 procedure TfrmLocalizar.cbCriterio_1Change(Sender: TObject);
 begin
@@ -144,8 +187,9 @@ procedure TfrmLocalizar.Atualizar;
 begin
   if RefConsulta = 'Doação (Pessoa)' then
     begin
+      cbCampo_1.Items.Clear;
       cbCampo_1.Items.AddStrings(['ID','NOME','CPF','NASCIMENTO','TIPO SANGUÍNEO']);
-      consSQL := 'SELECT pes_id ID'
+      consSQL := 'SELECT pes_id AS "ID"'
                 +', pes_nome AS "NOME"'
                 +', pes_datanasc AS "NASCIMENTO"'
                 +', pes_cpf AS "CPF"'

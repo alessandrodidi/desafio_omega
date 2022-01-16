@@ -98,6 +98,7 @@ end;
 procedure TfrmArqPessoa.Salvar;
 var
   descAcao: String;
+  Idade: Integer;
 begin
   try
     if Editado then
@@ -121,8 +122,8 @@ begin
             Exit;
           end;
         //Verifica a idade - deve estar entre 18 e 60 anos
-        if ((YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) < 18) or
-            (YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) > 60)) then
+        Idade := YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now)));
+        if ((Idade < 18) or (Idade > 60)) then
           begin
             Application.MessageBox('Idade deve ser entre 18 e 60 anos'
                                   ,'Aviso'

@@ -46,6 +46,7 @@ object frmProcDoacao: TfrmProcDoacao
       Top = 21
       Width = 38
       Height = 21
+      Alignment = taRightJustify
       TabOrder = 0
       OnKeyPress = edtIDPessoaKeyPress
     end
@@ -122,7 +123,7 @@ object frmProcDoacao: TfrmProcDoacao
     Caption = 'Doa'#231#245'es'
     Padding.Top = 5
     TabOrder = 2
-    object dbgPessoas: TDBGrid
+    object dbgDoacoes: TDBGrid
       Left = 2
       Top = 20
       Width = 680
@@ -136,7 +137,9 @@ object frmProcDoacao: TfrmProcDoacao
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
-      OnKeyDown = dbgPessoasKeyDown
+      OnDrawColumnCell = dbgDoacoesDrawColumnCell
+      OnDblClick = dbgDoacoesDblClick
+      OnKeyDown = dbgDoacoesKeyDown
     end
   end
   object gpbxDoacao: TGroupBox
@@ -168,11 +171,19 @@ object frmProcDoacao: TfrmProcDoacao
       Height = 13
       Caption = 'Quantidade'
     end
+    object lblUnidade: TLabel
+      Left = 324
+      Top = 24
+      Width = 10
+      Height = 13
+      Caption = 'ml'
+    end
     object edtIDDoacao: TEdit
       Left = 23
       Top = 21
       Width = 38
       Height = 21
+      Alignment = taRightJustify
       Enabled = False
       TabOrder = 0
     end
@@ -188,14 +199,14 @@ object frmProcDoacao: TfrmProcDoacao
       Text = '  /  /    '
       OnKeyPress = medtDtDoacaoKeyPress
     end
-    object btnIncluir: TButton
+    object btnSalvar: TButton
       Left = 8
       Top = 63
       Width = 75
       Height = 25
-      Caption = '&Incluir'
-      TabOrder = 2
-      OnClick = btnIncluirClick
+      Caption = '&Salvar'
+      TabOrder = 3
+      OnClick = btnSalvarClick
     end
     object btnCancelar: TButton
       Left = 83
@@ -203,7 +214,7 @@ object frmProcDoacao: TfrmProcDoacao
       Width = 75
       Height = 25
       Caption = '&Cancelar'
-      TabOrder = 3
+      TabOrder = 4
       OnClick = btnCancelarClick
     end
     object edtQtde: TEdit
@@ -212,7 +223,7 @@ object frmProcDoacao: TfrmProcDoacao
       Width = 61
       Height = 21
       Alignment = taRightJustify
-      TabOrder = 4
+      TabOrder = 2
       OnKeyPress = edtQtdeKeyPress
     end
   end

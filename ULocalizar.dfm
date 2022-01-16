@@ -13,7 +13,7 @@ object frmLocalizar: TfrmLocalizar
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Position = poDesigned
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
@@ -205,6 +205,7 @@ object frmLocalizar: TfrmLocalizar
       Width = 690
       Height = 34
       Align = alTop
+      BevelOuter = bvNone
       TabOrder = 0
     end
     object dbgResultados: TDBGrid
@@ -222,6 +223,15 @@ object frmLocalizar: TfrmLocalizar
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
     end
+  end
+  object btnUtilizar: TButton
+    Left = 8
+    Top = 88
+    Width = 75
+    Height = 25
+    Caption = '&Utilizar'
+    TabOrder = 2
+    OnClick = btnUtilizarClick
   end
   object ADOQuery: TADOQuery
     Connection = dmConexao.adocConexao
