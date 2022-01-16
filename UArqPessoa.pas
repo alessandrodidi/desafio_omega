@@ -55,6 +55,8 @@ type
     procedure Salvar;
     procedure Cancelar;
     procedure btnCancelarClick(Sender: TObject);
+    procedure dbgPessoasDblClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     PesID, PesNome, Acao: String;
     Editado: Boolean;
@@ -253,7 +255,7 @@ begin
           Atualizar;
         end
       else
-        Abort;
+        Exit;
     end
   else
     begin
@@ -333,8 +335,9 @@ procedure TfrmArqPessoa.btnNovoClick(Sender: TObject);
 begin
   Acao := 'ADICIONAR';
   Cancelar;
-  HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
   LimparForm(Self);
+  HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
+
 end;
 
 procedure TfrmArqPessoa.btnSalvarClick(Sender: TObject);
@@ -345,6 +348,11 @@ end;
 procedure TfrmArqPessoa.cbTipoSanguineoSelect(Sender: TObject);
 begin
   Editado := Enabled;
+end;
+
+procedure TfrmArqPessoa.dbgPessoasDblClick(Sender: TObject);
+begin
+  btnEditar.Click;
 end;
 
 procedure TfrmArqPessoa.dbgPessoasKeyDown(Sender: TObject; var Key: Word;
@@ -365,6 +373,13 @@ begin
     Key := #0
   else
     Editado := Enabled;
+end;
+
+procedure TfrmArqPessoa.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Cancelar;
 end;
 
 procedure TfrmArqPessoa.FormShow(Sender: TObject);

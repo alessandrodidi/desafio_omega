@@ -1,0 +1,254 @@
+object dmRelatorio: TdmRelatorio
+  OldCreateOrder = False
+  Height = 234
+  Width = 383
+  object ppDBPipeline: TppDBPipeline
+    UserName = 'DBPipeline'
+    Left = 71
+    Top = 80
+  end
+  object pprDoacoes: TppReport
+    AutoStop = False
+    DataPipeline = ppDBPipeline
+    PrinterSetup.BinName = 'Default'
+    PrinterSetup.DocumentName = 'Report'
+    PrinterSetup.PaperName = 'A4'
+    PrinterSetup.PrinterName = 'Default'
+    PrinterSetup.SaveDeviceSettings = False
+    PrinterSetup.mmMarginBottom = 6350
+    PrinterSetup.mmMarginLeft = 6350
+    PrinterSetup.mmMarginRight = 6350
+    PrinterSetup.mmMarginTop = 6350
+    PrinterSetup.mmPaperHeight = 297000
+    PrinterSetup.mmPaperWidth = 210000
+    PrinterSetup.PaperSize = 9
+    Template.FileName = 'D:\Desenvolvimento\Delphi\Desafio_Omega\RResDoacoes.rtm'
+    ArchiveFileName = '($MyDocuments)\ReportArchive.raf'
+    DeviceType = 'Screen'
+    DefaultFileDeviceType = 'PDF'
+    EmailSettings.ReportFormat = 'PDF'
+    LanguageID = 'Default'
+    OpenFile = False
+    OutlineSettings.CreateNode = True
+    OutlineSettings.CreatePageNodes = True
+    OutlineSettings.Enabled = True
+    OutlineSettings.Visible = True
+    ThumbnailSettings.Enabled = True
+    ThumbnailSettings.Visible = True
+    ThumbnailSettings.DeadSpace = 30
+    ThumbnailSettings.PageHighlight.Width = 3
+    PDFSettings.EmbedFontOptions = [efUseSubset]
+    PDFSettings.EncryptSettings.AllowCopy = True
+    PDFSettings.EncryptSettings.AllowInteract = True
+    PDFSettings.EncryptSettings.AllowModify = True
+    PDFSettings.EncryptSettings.AllowPrint = True
+    PDFSettings.EncryptSettings.AllowExtract = True
+    PDFSettings.EncryptSettings.AllowAssemble = True
+    PDFSettings.EncryptSettings.AllowQualityPrint = True
+    PDFSettings.EncryptSettings.Enabled = False
+    PDFSettings.EncryptSettings.KeyLength = kl40Bit
+    PDFSettings.EncryptSettings.EncryptionType = etRC4
+    PDFSettings.FontEncoding = feAnsi
+    PDFSettings.ImageCompressionLevel = 25
+    PDFSettings.PDFAFormat = pafNone
+    PreviewFormSettings.PageBorder.mmPadding = 0
+    RTFSettings.DefaultFont.Charset = DEFAULT_CHARSET
+    RTFSettings.DefaultFont.Color = clWindowText
+    RTFSettings.DefaultFont.Height = -13
+    RTFSettings.DefaultFont.Name = 'Arial'
+    RTFSettings.DefaultFont.Style = []
+    TextFileName = '($MyDocuments)\Report.pdf'
+    TextSearchSettings.DefaultString = '<FindText>'
+    TextSearchSettings.Enabled = True
+    XLSSettings.AppName = 'ReportBuilder'
+    XLSSettings.Author = 'ReportBuilder'
+    XLSSettings.Subject = 'Report'
+    XLSSettings.Title = 'Report'
+    XLSSettings.WorksheetName = 'Report'
+    Left = 159
+    Top = 82
+    Version = '19.03'
+    mmColumnWidth = 0
+    DataPipelineName = 'ppDBPipeline'
+    object ppHeaderBand1: TppHeaderBand
+      Background.Brush.Style = bsClear
+      Border.mmPadding = 0
+      mmBottomOffset = 0
+      mmHeight = 32544
+      mmPrintPosition = 0
+      object ppLabel1: TppLabel
+        DesignLayer = ppDesignLayer1
+        UserName = 'lblTitulo'
+        Border.mmPadding = 0
+        Caption = 'Relat'#243'rio de Doa'#231#245'es'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Name = 'Arial'
+        Font.Size = 18
+        Font.Style = [fsBold]
+        FormFieldSettings.FormSubmitInfo.SubmitMethod = fstPost
+        FormFieldSettings.FormFieldType = fftNone
+        Transparent = True
+        mmHeight = 7673
+        mmLeft = 4763
+        mmTop = 3440
+        mmWidth = 64823
+        BandType = 0
+        LayerName = Foreground
+      end
+      object ppLine1: TppLine
+        DesignLayer = ppDesignLayer1
+        UserName = 'Line1'
+        Border.mmPadding = 0
+        Pen.Color = clActiveCaption
+        Pen.Width = 2
+        Weight = 1.500000000000000000
+        mmHeight = 3969
+        mmLeft = -265
+        mmTop = 14288
+        mmWidth = 198173
+        BandType = 0
+        LayerName = Foreground
+      end
+    end
+    object ppDetailBand1: TppDetailBand
+      Background1.Brush.Style = bsClear
+      Background2.Brush.Style = bsClear
+      Border.mmPadding = 0
+      mmBottomOffset = 0
+      mmHeight = 13229
+      mmPrintPosition = 0
+    end
+    object ppFooterBand1: TppFooterBand
+      Background.Brush.Style = bsClear
+      Border.mmPadding = 0
+      mmBottomOffset = 0
+      mmHeight = 11113
+      mmPrintPosition = 0
+      object ppsvPagina: TppSystemVariable
+        DesignLayer = ppDesignLayer1
+        UserName = 'ppsvPagina'
+        Border.mmPadding = 0
+        VarType = vtPageNoDesc
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Name = 'Arial'
+        Font.Size = 10
+        Font.Style = [fsBold]
+        TextAlignment = taRightJustified
+        Transparent = True
+        mmHeight = 4234
+        mmLeft = 184944
+        mmTop = 5556
+        mmWidth = 11642
+        BandType = 8
+        LayerName = Foreground
+      end
+      object ppLine2: TppLine
+        DesignLayer = ppDesignLayer1
+        UserName = 'Line2'
+        Border.mmPadding = 0
+        Pen.Color = clActiveCaption
+        Pen.Width = 2
+        Weight = 1.500000000000000000
+        mmHeight = 3969
+        mmLeft = -265
+        mmTop = 1323
+        mmWidth = 198173
+        BandType = 8
+        LayerName = Foreground
+      end
+    end
+    object daDataModule1: TdaDataModule
+      object daADOQueryDataView1: TdaADOQueryDataView
+        UserName = 'Query_BS_DOACAO'
+        Height = 0
+        Left = 0
+        NameColumnWidth = 105
+        SizeColumnWidth = 35
+        SortMode = 0
+        Top = 0
+        TypeColumnWidth = 52
+        Width = 0
+        AutoSearchTabOrder = 0
+        object BS_DOACAO: TppChildDBPipeline
+          AutoCreateFields = False
+          UserName = 'BS_DOACAO'
+          object ppField1: TppField
+            FieldAlias = 'PES_TIPOSANG'
+            FieldName = 'PES_TIPOSANG'
+            FieldLength = 2
+            DisplayWidth = 2
+            Position = 0
+          end
+          object ppField2: TppField
+            FieldAlias = 'QTDE'
+            FieldName = 'QTDE'
+            FieldLength = 0
+            DataType = dtInteger
+            DisplayWidth = 10
+            Position = 1
+          end
+        end
+        object daSQL1: TdaSQL
+          GuidCollationType = gcMSSQLServer
+          DatabaseName = 'adocConexao'
+          DatabaseType = dtMSSQLServer
+          DataPipelineName = 'BS_DOACAO'
+          EditSQLAsText = True
+          LinkColor = clMaroon
+          LinkType = ltParameterizedSQL
+          MaxSQLFieldAliasLength = 25
+          SQLText.Strings = (
+            'SELECT BS_PESSOA.PES_TIPOSANG, COUNT(BS_DOACAO.DOA_QTDE) QTDE'
+            'FROM dbo.BS_DOACAO BS_DOACAO'
+            '      INNER JOIN dbo.BS_PESSOA BS_PESSOA ON '
+            '     (BS_PESSOA.PES_ID = BS_DOACAO.PES_ID)'
+            'GROUP BY BS_PESSOA.PES_TIPOSANG, '
+            '         BS_DOACAO.DOA_QTDE'
+            'ORDER BY QTDE DESC,'
+            '          BS_PESSOA.PES_TIPOSANG '
+            '         ')
+          SQLType = sqSQL2
+          object daField1: TdaField
+            Alias = 'PES_TIPOSANG'
+            DisplayWidth = 2
+            FieldAlias = 'PES_TIPOSANG'
+            FieldLength = 2
+            FieldName = 'PES_TIPOSANG'
+            SQLFieldName = 'PES_TIPOSANG'
+          end
+          object daField2: TdaField
+            Alias = 'QTDE'
+            DataType = dtInteger
+            DisplayWidth = 10
+            FieldAlias = 'QTDE'
+            FieldLength = 0
+            FieldName = 'QTDE'
+            SQLFieldName = 'QTDE'
+          end
+        end
+      end
+    end
+    object ppDesignLayers1: TppDesignLayers
+      object ppDesignLayer1: TppDesignLayer
+        UserName = 'Foreground'
+        LayerType = ltBanded
+        Index = 0
+      end
+    end
+    object ppParameterList1: TppParameterList
+    end
+  end
+  object ADOQuery: TADOQuery
+    Connection = dmConexao.adocConexao
+    Parameters = <>
+    Left = 72
+    Top = 16
+  end
+  object DataSource: TDataSource
+    DataSet = ADOQuery
+    Left = 168
+    Top = 16
+  end
+end

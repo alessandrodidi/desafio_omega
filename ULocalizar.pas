@@ -43,6 +43,7 @@ type
     procedure Atualizar;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnUtilizarClick(Sender: TObject);
+    procedure dbgResultadosDblClick(Sender: TObject);
   private
     nCriterios, idObj, posObjeto: Integer;
     posObjetos: Array of Array of Integer;
@@ -137,6 +138,11 @@ begin
     end;
 end;
 
+procedure TfrmLocalizar.dbgResultadosDblClick(Sender: TObject);
+begin
+  btnUtilizar.Click;
+end;
+
 procedure TfrmLocalizar.FormCreate(Sender: TObject);
 var
   i: Integer;
@@ -188,7 +194,7 @@ begin
   if RefConsulta = 'Doação (Pessoa)' then
     begin
       cbCampo_1.Items.Clear;
-      cbCampo_1.Items.AddStrings(['ID','NOME','CPF','NASCIMENTO','TIPO SANGUÍNEO']);
+      cbCampo_1.Items.AddStrings(['pes_id','pes_nome','pes_cpf','pes_datanasc','pes_tiposang']);
       consSQL := 'SELECT pes_id AS "ID"'
                 +', pes_nome AS "NOME"'
                 +', pes_datanasc AS "NASCIMENTO"'

@@ -4,7 +4,9 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ComCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ComCtrls, ppBands,
+  ppCache, ppClass, ppDesignLayer, ppParameter, ppComm, ppRelatv, ppProd,
+  ppReport, ppTypes;
 
 type
   TfrmPrincipal = class(TForm)
@@ -23,6 +25,7 @@ type
     procedure miSisSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure miProcDoacaoClick(Sender: TObject);
+    procedure miRelDoacaoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -35,7 +38,7 @@ var
 implementation
 
 uses
-  UFuncoes, UConexao, UArqPessoa, UProcDoacao;
+  UFuncoes, UConexao, UArqPessoa, UProcDoacao, URelatorio;
 
 {$R *.dfm}
 
@@ -76,6 +79,13 @@ begin
   else
     //Caso o formulário já tenha sido criado apenas o abre
     frmProcDoacao.ShowModal;
+end;
+
+procedure TfrmPrincipal.miRelDoacaoClick(Sender: TObject);
+begin
+  dmRelatorio.pprDoacoes.DeviceType := dtScreen;
+  dmRelatorio.pprDoacoes.ShowPrintDialog := False;
+  dmRelatorio.pprDoacoes.Print;
 end;
 
 procedure TfrmPrincipal.miSisSairClick(Sender: TObject);

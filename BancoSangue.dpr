@@ -7,7 +7,8 @@ uses
   UFuncoes in 'UFuncoes.pas',
   UConexao in 'UConexao.pas' {dmConexao: TDataModule},
   UArqPessoa in 'UArqPessoa.pas' {frmArqPessoa},
-  ULocalizar in 'ULocalizar.pas' {frmLocalizar};
+  ULocalizar in 'ULocalizar.pas' {frmLocalizar},
+  URelatorio in 'URelatorio.pas' {dmRelatorio: TDataModule};
 
 {$R *.res}
 
@@ -16,5 +17,6 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
   Application.CreateForm(TdmConexao, dmConexao);
+  Application.CreateForm(TdmRelatorio, dmRelatorio);
   Application.Run;
 end.

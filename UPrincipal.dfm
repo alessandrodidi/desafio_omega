@@ -53,6 +53,7 @@ object frmPrincipal: TfrmPrincipal
       Caption = '&Relat'#243'rio'
       object miRelDoacao: TMenuItem
         Caption = '&Doa'#231#227'o'
+        OnClick = miRelDoacaoClick
       end
     end
   end

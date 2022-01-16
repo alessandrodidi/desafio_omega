@@ -16,6 +16,7 @@ object frmArqPessoa: TfrmArqPessoa
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -241,6 +242,7 @@ object frmArqPessoa: TfrmArqPessoa
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+      OnDblClick = dbgPessoasDblClick
       OnKeyDown = dbgPessoasKeyDown
     end
   end

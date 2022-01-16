@@ -61,6 +61,7 @@ type
     procedure dbgDoacoesDblClick(Sender: TObject);
     procedure dbgDoacoesDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     Doa_ID, PesID, PesNome, PesDtNasc, DoaID, Acao: String;
     Editado: Boolean;
@@ -104,13 +105,14 @@ begin
                ,',P.pes_id AS "ID PESSOA"'
                ,',P.pes_nome AS "NOME"'
                ,',FORMAT(P.pes_datanasc,''dd/MM/yyyy'') AS "NASCIMENTO"'
+               ,',P.pes_tiposang AS "TIPO SANGUÍNEO"'
                ,',D.doa_status'
                ,'FROM bs_pessoa P'
                      ,'INNER JOIN bs_doacao D'
                             ,'ON D.pes_id = P.pes_id'
                ,'WHERE '+Filtro
                ,'ORDER BY P.pes_id, D.doa_data']);
-  dbgDoacoes.Fields[6].Visible := False;
+  dbgDoacoes.Fields[7].Visible := False;
 end;
 
 function TfrmProcDoacao.LocalizarPessoa(IDPessoa: String): TArray<String>;
@@ -319,19 +321,43 @@ begin
           Acao := EmptyStr;
           Editado := False;
           DoaID := EmptyStr;
+          PesID := EmptyStr;
           medtDtDoacao.Text := EmptyStr;
           edtQtde.Text := EmptyStr;
+          LimparForm(Self);
           HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
           dbgDoacoes.SelectedRows.Clear;
           Atualizar;
         end
       else
-        Abort;
+        Exit;
     end
   else
     begin
-      HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
-      dbgDoacoes.SelectedRows.Clear;
+      if Acao = 'ADICIONAR' then
+        begin
+          medtDtDoacao.Text := EmptyStr;
+          edtQtde.Text := EmptyStr;
+          HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
+          Acao := EmptyStr;
+        end
+      else if Acao = 'EDITAR' then
+        begin
+          edtIDDoacao.Text := EmptyStr;
+          medtDtDoacao.Text := EmptyStr;
+          edtQtde.Text := EmptyStr;
+          HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
+          Acao := EmptyStr;
+        end
+      else
+        begin
+          LimparForm(Self);
+          PesID := EmptyStr;
+          DoaID := EmptyStr;
+          HDControles([edtIDDoacao,medtDtDoacao,edtQtde],False);
+          dbgDoacoes.SelectedRows.Clear;
+          Atualizar;
+        end;
     end;
 end;
 
@@ -460,7 +486,6 @@ begin
       edtIDPessoa.SetFocus;
       Exit;
     end;
-
   Acao := 'ADICIONAR';
   Cancelar;
   HDControles([medtDtDoacao,edtQtde],True);
@@ -521,6 +546,13 @@ begin
     Key := #0
   else
     Editado := Enabled;
+end;
+
+procedure TfrmProcDoacao.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Cancelar;
 end;
 
 procedure TfrmProcDoacao.FormShow(Sender: TObject);

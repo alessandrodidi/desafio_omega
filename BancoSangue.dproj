@@ -122,6 +122,11 @@
             <Form>frmLocalizar</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="URelatorio.pas">
+            <Form>dmRelatorio</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

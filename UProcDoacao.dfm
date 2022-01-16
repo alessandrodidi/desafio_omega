@@ -16,6 +16,7 @@ object frmProcDoacao: TfrmProcDoacao
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
