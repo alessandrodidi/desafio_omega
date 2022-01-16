@@ -1,0 +1,111 @@
+unit ULocalizar;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.StdCtrls, Data.DB,
+  Data.Win.ADODB;
+
+type
+  TfrmLocalizar = class(TForm)
+    gpbxCriteriosPesquisa: TGroupBox;
+    lblCampo: TLabel;
+    cbCampo_1: TComboBox;
+    lblCriterio: TLabel;
+    cbCriterio_1: TComboBox;
+    lblValor: TLabel;
+    edtValor1_1: TEdit;
+    lblE_1: TLabel;
+    edtValor2_1: TEdit;
+    cbCondicao_1: TComboBox;
+    lblCondicao: TLabel;
+    sbtnIncluirCriterio: TSpeedButton;
+    sbtnPesquisar: TSpeedButton;
+    sbtnLimparPesquisa_999: TSpeedButton;
+    ADOQuery: TADOQuery;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    nCriterios, idObj, posObjeto: Integer;
+    posObjetos: Array of Array of Integer;
+    consSQL, Filtro: String;
+    { Private declarations }
+  public
+    posX, posY: Integer;
+    RefConsulta, Param1: String;
+    const
+      DefaultCaption: String = 'Pesquisar';
+    { Public declarations }
+  end;
+
+var
+  frmLocalizar: TfrmLocalizar;
+
+implementation
+
+uses
+  UFuncoes, UConexao, UProcDoacao;
+
+{$R *.dfm}
+
+procedure TfrmLocalizar.FormCreate(Sender: TObject);
+var
+  i: Integer;
+begin
+  posX := -1;
+  posY := -1;
+  nCriterios := 1;
+  idObj := 1;
+  posObjeto := 0;
+
+  SetLength(posObjetos,9,2);
+  i:=0;
+  while i < 9 do
+    begin
+      posObjetos[i,0] := i+2;
+      posObjetos[i,1] := 0;
+      i:=i+1;
+    end;
+end;
+
+procedure TfrmLocalizar.FormShow(Sender: TObject);
+begin
+  if ((posX >= 0) and (posY >= 0)) then
+    begin
+      Self.Position := poDesigned;
+      Self.Top := posY;
+      Self.Left := posX;
+    end
+  else
+    Self.Position := poOwnerFormCenter;
+
+  {if RefConsulta <> EmptyStr then
+    Self.Caption := DefaultCaption+' ['+RefConsulta+']'
+  else
+    Self.Caption := DefaultCaption;
+
+  if RefConsulta = 'Doação (Pessoa)' then
+    begin
+      cbCampo_1.Items.AddStrings(['ID','NOME','CPF','NASCIMENTO','TIPO SANGUÍNEO']);
+      consSQL := 'SELECT pes_id ID'
+                +', pes_nome AS "NOME"'
+                +', pes_datanasc AS "NASCIMENTO"'
+                +', pes_cpf AS "CPF"'
+                +', pes_tiposang AS "TIPO SANGUÍNEO" '
+                +'FROM bs_pessoa '
+                +'WHERE ';
+    end
+  else
+    begin
+      Application.MessageBox(PChar('Não foram encontrados parâmetros de pesquisa para '''+RefConsulta+''''+#13#13
+                             +'- Entre em contato com o administrador do sistema para reportar o problema'),'Erro', MB_ICONERROR + MB_OK);
+      Self.Close;
+      Abort;
+    end;
+
+  Filtro := '1=1';
+  SQL(ADOQuery,[consSQL+Filtro]);}
+end;
+
+end.

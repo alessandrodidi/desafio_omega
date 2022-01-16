@@ -76,7 +76,6 @@ object frmProcDoacao: TfrmProcDoacao
     Height = 33
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 731
     object btnAtualizar: TButton
       Left = 8
       Top = 3
@@ -123,9 +122,6 @@ object frmProcDoacao: TfrmProcDoacao
     Caption = 'Doa'#231#245'es'
     Padding.Top = 5
     TabOrder = 2
-    ExplicitTop = 226
-    ExplicitWidth = 731
-    ExplicitHeight = 203
     object dbgPessoas: TDBGrid
       Left = 2
       Top = 20

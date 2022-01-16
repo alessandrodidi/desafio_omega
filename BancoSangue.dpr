@@ -5,7 +5,9 @@ uses
   UPrincipal in 'UPrincipal.pas' {frmPrincipal},
   UProcDoacao in 'UProcDoacao.pas' {frmProcDoacao},
   UFuncoes in 'UFuncoes.pas',
-  UConexao in 'UConexao.pas' {dmConexao: TDataModule};
+  UConexao in 'UConexao.pas' {dmConexao: TDataModule},
+  UArqPessoa in 'UArqPessoa.pas' {frmArqPessoa},
+  ULocalizar in 'ULocalizar.pas' {frmLocalizar};
 
 {$R *.res}
 

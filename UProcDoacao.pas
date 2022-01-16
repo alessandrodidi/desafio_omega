@@ -58,7 +58,7 @@ type
     procedure edtIDPessoaKeyPress(Sender: TObject; var Key: Char);
     procedure btnLocalizarClick(Sender: TObject);
   private
-    Doa_ID, PesID, PesNome, Acao: String;
+    Doa_ID, PesID, PesNome, DoaID, Acao: String;
     Editado: Boolean;
     { Private declarations }
   public
@@ -71,7 +71,7 @@ var
 implementation
 
 uses
-  UConexao, UFuncoes;
+  UConexao, UFuncoes, ULocalizar;
 
 {$R *.dfm}
 
@@ -251,6 +251,7 @@ begin
           Editado := False;
           PesID := EmptyStr;
           PesNome := EmptyStr;
+          DoaID := EmptyStr;
           LimparForm(Self);
           HDControles([edtIDPessoa,edtNome,edtIDDoacao,medtDtDoacao,edtQtde],False);
           dbgPessoas.SelectedRows.Clear;
@@ -338,13 +339,32 @@ begin
   if edtIDPessoa.Text <> EmptyStr then
     begin
       PesID := LocalizarPessoa(edtIDPessoa.Text)[0];
-      PesNome := LocalizarPessoa(edtIDPessoa.Text)[1];
-      edtIDPessoa.Text := PesID;
-      edtNome.Text := PesNome;
+      if PesID <> EmptyStr then
+        begin
+          PesNome := LocalizarPessoa(edtIDPessoa.Text)[1];
+          edtIDPessoa.Text := PesID;
+          edtNome.Text := PesNome;
+          Atualizar;
+        end;
     end
   else
     begin
       edtNome.Text := EmptyStr;
+      frmLocalizar := TfrmLocalizar.Create(Self);
+      frmLocalizar.RefConsulta := 'Doação (Pessoa)';
+      frmLocalizar.Show;
+      {if frmLocalizar = Nil then
+        begin
+          frmLocalizar := TfrmLocalizar.Create(Self);
+          frmLocalizar.RefConsulta := 'Doação (Pessoa)';
+          frmLocalizar.Show;
+        end
+      else
+        begin
+          frmLocalizar.RefConsulta := 'Doação (Pessoa)';
+          frmLocalizar.Show;
+        end; }
+
     end;
 
 end;
