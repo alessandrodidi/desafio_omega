@@ -150,6 +150,7 @@ object frmArqPessoa: TfrmArqPessoa
       Top = 101
       Width = 281
       Height = 21
+      CharCase = ecLowerCase
       MaxLength = 100
       TabOrder = 6
       OnKeyPress = edtEmailKeyPress
@@ -180,7 +181,6 @@ object frmArqPessoa: TfrmArqPessoa
     Height = 33
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 731
     object btnAtualizar: TButton
       Left = 8
       Top = 3
@@ -227,9 +227,6 @@ object frmArqPessoa: TfrmArqPessoa
     Caption = 'Pessoas'
     Padding.Top = 5
     TabOrder = 2
-    ExplicitTop = 226
-    ExplicitWidth = 731
-    ExplicitHeight = 203
     object dbgPessoas: TDBGrid
       Left = 2
       Top = 20

@@ -41,12 +41,13 @@ object frmProcDoacao: TfrmProcDoacao
       Height = 13
       Caption = 'Nome'
     end
-    object edtID: TEdit
+    object edtIDPessoa: TEdit
       Left = 23
       Top = 21
       Width = 38
       Height = 21
       TabOrder = 0
+      OnKeyPress = edtIDPessoaKeyPress
     end
     object edtNome: TEdit
       Left = 113
@@ -57,6 +58,15 @@ object frmProcDoacao: TfrmProcDoacao
       MaxLength = 100
       TabOrder = 1
       OnKeyPress = edtNomeKeyPress
+    end
+    object btnLocalizar: TButton
+      Left = 471
+      Top = 19
+      Width = 75
+      Height = 25
+      Caption = '&Localizar'
+      TabOrder = 2
+      OnClick = btnLocalizarClick
     end
   end
   object pnlComandos: TPanel
@@ -162,7 +172,7 @@ object frmProcDoacao: TfrmProcDoacao
       Height = 13
       Caption = 'Quantidade'
     end
-    object Edit1: TEdit
+    object edtIDDoacao: TEdit
       Left = 23
       Top = 21
       Width = 38
@@ -182,22 +192,13 @@ object frmProcDoacao: TfrmProcDoacao
       Text = '  /  /    '
       OnKeyPress = medtDtDoacaoKeyPress
     end
-    object edtQtde: TEdit
-      Left = 263
-      Top = 21
-      Width = 45
-      Height = 21
-      Alignment = taRightJustify
-      TabOrder = 2
-      OnKeyPress = edtQtdeKeyPress
-    end
     object btnIncluir: TButton
       Left = 8
       Top = 63
       Width = 75
       Height = 25
       Caption = '&Incluir'
-      TabOrder = 3
+      TabOrder = 2
       OnClick = btnIncluirClick
     end
     object btnCancelar: TButton
@@ -206,7 +207,17 @@ object frmProcDoacao: TfrmProcDoacao
       Width = 75
       Height = 25
       Caption = '&Cancelar'
+      TabOrder = 3
+      OnClick = btnCancelarClick
+    end
+    object edtQtde: TEdit
+      Left = 260
+      Top = 21
+      Width = 61
+      Height = 21
+      Alignment = taRightJustify
       TabOrder = 4
+      OnKeyPress = edtQtdeKeyPress
     end
   end
   object ADOQuery: TADOQuery

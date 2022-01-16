@@ -15,6 +15,7 @@ uses
   function ValidarEmail(Email: String): Boolean;
   procedure LimparForm(Form: TForm);
   procedure HDControles(Comp: array of TComponent; HD: Boolean);
+  function ValidarFloat(Valor: String): Boolean;
 
 implementation
 
@@ -140,6 +141,16 @@ function ValidarData(Data: String): Boolean;
 begin
   try
     StrToDate(Data);
+    Result := True;
+  except on E: Exception do
+    Result := False;
+  end;
+end;
+
+function ValidarFloat(Valor: String): Boolean;
+begin
+  try
+    StrToFloat(Valor);
     Result := True;
   except on E: Exception do
     Result := False;

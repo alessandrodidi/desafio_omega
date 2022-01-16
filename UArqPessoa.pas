@@ -121,7 +121,6 @@ begin
             Exit;
           end;
         //Verifica a idade - deve estar entre 18 e 60 anos
-        //showmessage(IntToStr(YearsBetween(StrToDate('23/11/1986'),now)));
         if ((YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) < 18) or
             (YearsBetween(StrToDate(medtDtNasc.Text),StrToDate(FormatDateTime('dd/mm/yyyy', Now))) > 60)) then
           begin
@@ -172,9 +171,12 @@ begin
                       ,'WHERE ((UPPER(pes_nome) = '''+UpperCase(edtNome.Text)+''''
                                ,'and pes_datanasc = '''+medtDtNasc.Text+''')'
                               ,'or (pes_cpf = '''+medtCPF.Text+'''))']);
-        if ADOQuery2.RecordCount > 0 then
+        if ((ADOQuery2.RecordCount > 0) and
+            (Acao = 'ADICIONAL')) or
+           ((ADOQuery2.RecordCount > 0) and
+             (PesID <> ADOQuery2.FieldByName('pes_id').Text)) then
           begin
-            Application.MessageBox(PChar('"'+edtNome.Text+'" já está cadastrado com o ID '+ADOQuery2.FieldByName('pes_id').Text)
+            Application.MessageBox(PChar('"'+edtNome.Text+'" já está cadastrado "'+ADOQuery2.FieldByName('pes_id').Text+' - '+ADOQuery2.FieldByName('pes_nome').Text+'"')
                                   ,'Aviso'
                                   ,MB_ICONEXCLAMATION + MB_OK);
             edtNome.SetFocus;
@@ -200,6 +202,14 @@ begin
         else if Acao = 'EDITAR' then
           begin
             descAcao := 'editado';
+            SQL(ADOQuery,['UPDATE bs_pessoa SET'
+                         ,'pes_nome = '''+edtNome.Text+''''
+                         ,',pes_datanasc = '''+medtDtNasc.Text+''''
+                         ,',pes_cpf = '''+medtCPF.Text+''''
+                         ,',pes_tiposang = '''+cbTipoSanguineo.Text+''''
+                         ,',pes_celular = '''+medtCelular.Text+''''
+                         ,',pes_email = '''+edtEmail.Text+''''
+                         ,'WHERE pes_id = '+PesID]);
           end;
         Acao := EmptyStr;
         Editado := False;
@@ -248,6 +258,7 @@ begin
     begin
       HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],False);
       dbgPessoas.SelectedRows.Clear;
+      LimparForm(Self);
     end;
 end;
 
@@ -322,6 +333,7 @@ begin
   Acao := 'ADICIONAR';
   Cancelar;
   HDControles([edtNome,medtDtNasc,medtCPF,cbTipoSanguineo,medtCelular,edtEmail],True);
+  LimparForm(Self);
 end;
 
 procedure TfrmArqPessoa.btnSalvarClick(Sender: TObject);
